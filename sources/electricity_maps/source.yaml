@@ -1,0 +1,39 @@
+# Source: Electricity Maps
+# Category: Energy Pricing / Grid Carbon
+# Recoverability: third_party
+# Cadence: hourly
+
+source_id: electricity_maps
+garden: repair
+name: Electricity Maps
+source_type: api
+description: >
+  Real-time electricity pricing and carbon intensity by region.
+  Used for: running cost calculations for mining rigs, heat pumps,
+  EV charging. Grid constraint signals.
+
+cost: freemium
+requires_api_key: true
+api: https://api.electricitymap.org/v3/
+licensing: commercial
+
+expected_cadence: hourly
+freshness_sla_hours: 2
+
+categories:
+  - price
+  - carbon_intensity
+  - grid_capacity
+  - renewable_share
+
+fields:
+  - zone
+  - price_eur_kwh
+  - carbon_gco2_kwh
+  - renewable_pct
+  - timestamp
+
+storage:
+  format: jsonl
+  partition: date
+  path: data/hardware/energy/

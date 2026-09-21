@@ -1,0 +1,46 @@
+# Source: France Repairability Index
+# Category: Repair Scores / Product Durability
+# Recoverability: third_party
+# Cadence: monthly
+
+source_id: france_repairability
+garden: repair
+name: France Repairability Index
+source_type: scrape
+description: >
+  French government repairability scores for electronics. Mandatory since
+  Jan 2021. Scores 0-10 on repairability. Covers phones, laptops, TVs,
+  washers, mowers, etc. The richest structured repair data available.
+
+cost: free
+requires_api_key: false
+licensing: open_data
+
+expected_cadence: monthly
+freshness_sla_hours: 720
+
+categories:
+  - smartphones
+  - laptops
+  - televisions
+  - washing_machines
+  - mowers
+  - servers
+
+fields:
+  - product_id
+  - brand
+  - model
+  - repairability_score
+  - category
+  - scoring_date
+  - documentation_score
+  - disassembly_score
+  - parts_availability_score
+  - parts_price_score
+  - software_support_score
+
+storage:
+  format: jsonl
+  partition: date
+  path: data/repair_db/france_index/

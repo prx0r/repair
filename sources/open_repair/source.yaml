@@ -1,0 +1,51 @@
+# Source: Open Repair Alliance
+# Category: Repair Data / Fault Database
+# Recoverability: third_party
+# Cadence: weekly
+
+source_id: open_repair_alliance
+garden: repair
+name: Open Repair Alliance
+source_type: api
+description: >
+  Open repair data from community repair cafés across Europe. Contains fault
+  types, repair outcomes, parts used, and repairability scores. The canonical
+  source for "what breaks and how to fix it."
+
+# Access
+cost: free
+requires_api_key: false
+api: https://openrepairdata.org/api/v1/
+licensing: open_data
+
+# Cadence
+expected_cadence: weekly
+freshness_sla_hours: 168
+
+# What we collect
+endpoints:
+  - /items          # repaired items with fault/outcome data
+  - /repairs        # individual repair events
+  - /organizations  # repair café locations
+
+# Output schema
+fields:
+  - item_id
+  - item_type
+  - brand
+  - model
+  - fault_type
+  - fault_description
+  - repair_action
+  - repair_outcome  # fixed, partially_fixed, not_fixed, end_of_life
+  - parts_used
+  - repair_time_minutes
+  - organization
+  - location
+  - date
+
+# Storage
+storage:
+  format: jsonl
+  partition: date
+  path: data/repair_db/open_repair/

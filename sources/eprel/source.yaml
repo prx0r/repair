@@ -1,0 +1,43 @@
+# Source: EPREL - EU Product Energy Register
+# Category: Energy Efficiency / Product Ratings
+# Recoverability: third_party
+# Cadence: weekly
+
+source_id: eprel
+garden: repair
+name: EU Product Energy Register (EPREL)
+source_type: api
+description: >
+  EU database of energy-related products with efficiency ratings.
+  Useful for solar panels, inverters, batteries, heat pumps.
+  Contains manufacturer, model, energy class, and technical specs.
+
+cost: free
+requires_api_key: false
+api: https://eprel.ec.europa.eu/api/
+licensing: open_data
+
+expected_cadence: weekly
+freshness_sla_hours: 168
+
+categories:
+  - solar_panels
+  - inverters
+  - batteries
+  - heat_pumps
+  - led_lighting
+  - appliances
+
+fields:
+  - product_id
+  - manufacturer
+  - model
+  - energy_class
+  - energy_consumption
+  - category
+  - registration_date
+
+storage:
+  format: jsonl
+  partition: date
+  path: data/hardware/eprel/

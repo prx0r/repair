@@ -1,0 +1,43 @@
+# Source: UK Companies House
+# Category: Company Identity / Business Data
+# Recoverability: third_party
+# Cadence: daily
+
+source_id: companies_house
+garden: repair
+name: UK Companies House
+source_type: api
+description: >
+  UK company registry. Directors, filings, accounts, charges.
+  Used for identifying repair businesses, parts suppliers, and
+  tracking company health/liquidation (opportunity signals).
+
+cost: free
+requires_api_key: true
+api: https://api.company-information.service.gov.uk/
+licensing: open_data
+
+expected_cadence: daily
+freshness_sla_hours: 48
+
+categories:
+  - repair_services
+  - electronics_retailers
+  - parts_suppliers
+  - solar_installers
+  - robot_manufacturers
+
+fields:
+  - company_number
+  - company_name
+  - status
+  - sic_codes
+  - address
+  - incorporation_date
+  - last_accounts
+  - directors
+
+storage:
+  format: jsonl
+  partition: date
+  path: data/hardware/companies/

@@ -1,0 +1,45 @@
+# Source: Mouser Electronics
+# Category: Component Pricing / Parts
+# Recoverability: third_party
+# Cadence: daily
+
+source_id: mouser
+garden: repair
+name: Mouser Electronics
+source_type: api
+description: >
+  Electronic component distributor. Pricing, stock, datasheets for
+  replacement parts: ICs, connectors, passives, sensors, modules.
+
+cost: free
+requires_api_key: true
+api: https://api.mouser.com/api/v1/
+licensing: commercial
+
+expected_cadence: daily
+freshness_sla_hours: 48
+
+categories:
+  - connectors
+  - capacitors
+  - resistors
+  - microcontrollers
+  - sensors
+  - power_modules
+  - displays
+  - batteries
+
+fields:
+  - part_number
+  - manufacturer
+  - description
+  - price_gbp
+  - stock_quantity
+  - moq
+  - datasheet_url
+  - category
+
+storage:
+  format: jsonl
+  partition: date
+  path: data/hardware/components/

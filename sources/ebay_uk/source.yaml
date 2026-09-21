@@ -1,0 +1,61 @@
+# Source: eBay UK Sold Listings
+# Category: Used Markets / Resale Pricing
+# Recoverability: third_party
+# Cadence: daily
+
+source_id: ebay_uk_sold
+garden: repair
+name: eBay UK Sold Listings
+source_type: scrape
+description: >
+  Sold/completed listings from eBay UK. Primary source for used electronics
+  pricing, depreciation curves, and market depth. Categories: phones, laptops,
+  GPUs, cameras, power tools, robot parts.
+
+# Access
+cost: free
+requires_api_key: false
+api: ebay_public_search
+rate_limit: "1 request per 2 seconds"
+licensing: terms_of_service
+
+# Cadence
+expected_cadence: daily
+freshness_sla_hours: 48
+
+# What we collect
+categories:
+  - "macbook pro"
+  - "iphone"
+  - "ipad"
+  - "rtx 4090"
+  - "rtx 3080"
+  - "nikon camera"
+  - "makita drill"
+  - "sony amplifier"
+  - "dyson vacuum"
+  - "nintendo switch"
+  - "esp32"
+  - "raspberry pi"
+  - "solar panel"
+  - "battery 18650"
+  - "brushless motor"
+  - "servo motor"
+  - "mppt controller"
+  - "inverter"
+
+# Output schema
+fields:
+  - title
+  - soldPrice
+  - soldCurrency
+  - soldDate
+  - condition
+  - keyword
+  - collected_at
+
+# Storage
+storage:
+  format: jsonl
+  partition: date
+  path: data/resale/ebay_sold/

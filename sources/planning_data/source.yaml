@@ -1,0 +1,44 @@
+# Source: UK Planning Data
+# Category: Planning Applications / Construction
+# Recoverability: third_party
+# Cadence: daily
+
+source_id: planning_data
+garden: repair
+name: UK Planning Applications
+source_type: api
+description: >
+  UK council planning applications. Solar panel installations, heat pump
+  installations, EV charger installations, extension/renovation permits.
+  Signal for: demand for parts, installation services, renovation activity.
+
+cost: free
+requires_api_key: false
+api: https://www.planning.data.gov.uk/api/v1/
+licensing: open_data
+
+expected_cadence: daily
+freshness_sla_hours: 48
+
+categories:
+  - solar_installations
+  - heat_pump_installations
+  - ev_charger_installations
+  - extensions
+  - renovations
+  - commercial_repairs
+
+fields:
+  - application_id
+  - description
+  - address
+  - postcode
+  - decision
+  - decision_date
+  - council
+  - category
+
+storage:
+  format: jsonl
+  partition: date
+  path: data/hardware/planning/

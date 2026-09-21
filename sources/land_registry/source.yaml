@@ -1,0 +1,42 @@
+# Source: HM Land Registry
+# Category: Property / Location Intelligence
+# Recoverability: third_party
+# Cadence: daily
+
+source_id: land_registry
+garden: repair
+name: HM Land Registry Price Paid Data
+source_type: bulk_download
+description: >
+  UK property transactions. Price, address, date, property type.
+  Used for: property value context, postcode-level economics,
+  installation opportunity signals (solar, heat pumps, EV chargers).
+
+cost: free
+requires_api_key: false
+api: https://landregistry.data.gov.uk/
+licensing: open_data
+
+expected_cadence: daily
+freshness_sla_hours: 48
+
+categories:
+  - residential_transactions
+  - commercial_transactions
+
+fields:
+  - transaction_id
+  - price
+  - date_of_transfer
+  - postcode
+  - property_type
+  - new_build
+  - tenure
+  - paon
+  - street
+  - locality
+
+storage:
+  format: csv
+  partition: date
+  path: data/hardware/property/
