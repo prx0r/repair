@@ -1,7 +1,8 @@
 {
-  "version": "1.0",
+  "version": "2.0",
   "generated": "2026-09-21",
   "garden": "repair",
+  "total_sources": 52,
   "sources": [
     {
       "id": "ebay_uk",
@@ -14,7 +15,8 @@
       "data_shape": ["title", "soldPrice", "soldCurrency", "soldDate", "condition", "keyword"],
       "what_it_answers": "What is this used thing actually worth?",
       "storage": "data/resale/ebay_sold/{date}.jsonl",
-      "collector": "collectors/ebay_uk_collector.py"
+      "collector": "collectors/ebay_uk_collector.py",
+      "found_in": ["ptech_v0", "ptech_v0.3", "research_kernel"]
     },
     {
       "id": "open_repair",
@@ -28,7 +30,7 @@
       "what_it_answers": "What breaks and how often?",
       "storage": "data/repair_db/open_repair/{date}.jsonl",
       "collector": "collectors/open_repair_collector.py",
-      "notes": "305k+ EEE rows. The richest structured repair dataset in existence."
+      "found_in": ["ptech_v0", "ptech_v0.3", "research_kernel", "scarcity_lab"]
     },
     {
       "id": "france_repairability",
@@ -41,7 +43,8 @@
       "data_shape": ["brand", "model", "repairability_score", "category", "documentation_score", "disassembly_score", "parts_availability_score"],
       "what_it_answers": "Which products are designed to be repaired?",
       "storage": "data/repair_db/france_index/{date}_{category}.jsonl",
-      "collector": "collectors/france_repairability_collector.py"
+      "collector": "collectors/france_repairability_collector.py",
+      "found_in": ["built_fresh"]
     },
     {
       "id": "eprel",
@@ -54,7 +57,8 @@
       "data_shape": ["product_id", "manufacturer", "model", "energy_class", "energy_consumption"],
       "what_it_answers": "What energy hardware is certified and what are its specs?",
       "storage": "data/hardware/eprel/{date}_{category}.jsonl",
-      "collector": "collectors/eprel_collector.py"
+      "collector": "collectors/eprel_collector.py",
+      "found_in": ["ptech_v0.3", "built_fresh"]
     },
     {
       "id": "planning_data",
@@ -67,7 +71,8 @@
       "data_shape": ["application_id", "description", "address", "postcode", "decision", "council"],
       "what_it_answers": "Where is installation demand emerging?",
       "storage": "data/hardware/planning/{date}.jsonl",
-      "collector": "collectors/planning_data_collector.py"
+      "collector": "collectors/planning_data_collector.py",
+      "found_in": ["ptech_v0", "ptech_v0.3", "research_kernel", "constraint_surface", "probe_recovery"]
     },
     {
       "id": "land_registry",
@@ -80,7 +85,8 @@
       "data_shape": ["transaction_id", "price", "date_of_transfer", "postcode", "property_type"],
       "what_it_answers": "What is the economic context of a postcode?",
       "storage": "data/hardware/property/{date}.jsonl",
-      "collector": "collectors/land_registry_collector.py"
+      "collector": "collectors/land_registry_collector.py",
+      "found_in": ["built_fresh"]
     },
     {
       "id": "dvla",
@@ -94,7 +100,7 @@
       "what_it_answers": "Which vehicles need repair and what fails?",
       "storage": "data/hardware/vehicles/{date}.jsonl",
       "collector": "collectors/dvla_collector.py",
-      "notes": "Sample fleet only. Bulk feed needs registration."
+      "found_in": ["built_fresh"]
     },
     {
       "id": "companies_house",
@@ -108,7 +114,8 @@
       "what_it_answers": "Who are the repair businesses and are they healthy?",
       "storage": "data/hardware/companies/{date}.jsonl",
       "collector": "collectors/companies_house_collector.py",
-      "api_key_env": "COMPANIES_HOUSE_API_KEY"
+      "api_key_env": "COMPANIES_HOUSE_API_KEY",
+      "found_in": ["ptech_v0", "ptech_v0.3", "research_kernel"]
     },
     {
       "id": "electricity_maps",
@@ -122,7 +129,8 @@
       "what_it_answers": "What does electricity cost right now?",
       "storage": "data/hardware/energy/{date}.jsonl",
       "collector": "collectors/electricity_maps_collector.py",
-      "api_key_env": "ELECTRICITY_MAPS_TOKEN"
+      "api_key_env": "ELECTRICITY_MAPS_TOKEN",
+      "found_in": ["built_fresh"]
     },
     {
       "id": "mouser",
@@ -135,7 +143,8 @@
       "data_shape": ["part_number", "manufacturer", "price_gbp", "stock_quantity", "lead_time_days", "lifecycle_status"],
       "what_it_answers": "What do replacement parts cost and are they in stock?",
       "storage": "data/hardware/components/{date}.jsonl",
-      "api_key_env": "MOUSER_API_KEY"
+      "api_key_env": "MOUSER_API_KEY",
+      "found_in": ["ptech_v0", "ptech_v0.3", "research_kernel", "scarcity_lab"]
     },
     {
       "id": "digikey",
@@ -147,7 +156,8 @@
       "licence": "commercial",
       "data_shape": ["part_number", "manufacturer", "price_gbp", "stock_quantity", "lead_time_days"],
       "what_it_answers": "Cross-validation with Mouser for scarcity signals",
-      "api_key_env": "DIGIKEY_CLIENT_ID"
+      "api_key_env": "DIGIKEY_CLIENT_ID",
+      "found_in": ["ptech_v0", "ptech_v0.3", "research_kernel", "scarcity_lab"]
     },
     {
       "id": "nexar",
@@ -159,7 +169,8 @@
       "licence": "commercial",
       "data_shape": ["mpn", "description", "stock", "price_tiers", "distributor"],
       "what_it_answers": "Aggregated supply chain across multiple distributors",
-      "api_key_env": "NEXAR_CLIENT_ID"
+      "api_key_env": "NEXAR_CLIENT_ID",
+      "found_in": ["ptech_v0", "ptech_v0.3", "research_kernel", "scarcity_lab"]
     },
     {
       "id": "ifixit",
@@ -171,7 +182,7 @@
       "licence": "review_terms",
       "data_shape": ["device_type", "guide_title", "steps", "parts", "tools", "difficulty"],
       "what_it_answers": "How do you fix this? What tools and parts are needed?",
-      "notes": "Use as knowledge enrichment, not moat."
+      "found_in": ["ptech_v0", "ptech_v0.3", "research_kernel"]
     },
     {
       "id": "dvsa_mot_bulk",
@@ -183,7 +194,8 @@
       "licence": "government_api_terms",
       "data_shape": ["vehicle_id", "all_tests", "all_defects", "mileage_history"],
       "what_it_answers": "Complete failure history of the UK vehicle fleet",
-      "notes": "Bulk JSONL ~500k records. Daily delta after 08:00."
+      "notes": "Bulk JSONL ~500k records. Daily delta after 08:00.",
+      "found_in": ["ptech_v0", "ptech_v0.3", "research_kernel"]
     },
     {
       "id": "opss_recalls",
@@ -195,7 +207,8 @@
       "licence": "OGL",
       "data_shape": ["product", "risk", "batch", "remedy", "date"],
       "what_it_answers": "What products have known defects at scale?",
-      "storage": "data/repair_db/recalls/{date}.jsonl"
+      "storage": "data/repair_db/recalls/{date}.jsonl",
+      "found_in": ["ptech_v0", "ptech_v0.3", "research_kernel"]
     },
     {
       "id": "uk_ev_ocpi",
@@ -207,7 +220,8 @@
       "licence": "PCPR_open_data",
       "data_shape": ["evse_id", "status", "tariff", "connector_type", "location"],
       "what_it_answers": "Live state of UK EV charge network",
-      "notes": "CRITICAL: 30-60s granularity. Historical publication not required by regulation. Archive now or lose forever."
+      "notes": "CRITICAL: 30-60s granularity. Archive now or lose forever.",
+      "found_in": ["ptech_v0", "ptech_v0.3"]
     },
     {
       "id": "cec_solar",
@@ -218,7 +232,8 @@
       "access": "free_excel",
       "licence": "state_of_california",
       "data_shape": ["manufacturer", "model", "technology", "pmp", "vmp", "imp"],
-      "what_it_answers": "What solar panels are certified and what are their specs?"
+      "what_it_answers": "What solar panels are certified and what are their specs?",
+      "found_in": ["ptech_v0", "ptech_v0.3"]
     },
     {
       "id": "pvlive",
@@ -229,7 +244,336 @@
       "access": "free_api",
       "licence": "open_data",
       "data_shape": ["site_id", "generation_kw", "capacity_kw", "performance_ratio"],
-      "what_it_answers": "How well are solar panels actually performing?"
+      "what_it_answers": "How well are solar panels actually performing?",
+      "found_in": ["ptech_v0", "ptech_v0.3"]
+    },
+    {
+      "id": "element14_farnell",
+      "name": "element14/Farnell",
+      "category": "component_pricing",
+      "status": "ready",
+      "cadence_seconds": 86400,
+      "access": "free_api_key",
+      "licence": "commercial",
+      "data_shape": ["part_number", "manufacturer", "price_gbp", "stock_quantity", "lead_time_days"],
+      "what_it_answers": "UK/EU component pricing, cross-validation with Mouser/DigiKey",
+      "api_key_env": "ELEMENT14_API_KEY",
+      "found_in": ["ptech_v0", "ptech_v0.3", "research_kernel"]
+    },
+    {
+      "id": "rs_components",
+      "name": "RS Components",
+      "category": "component_pricing",
+      "status": "ready",
+      "cadence_seconds": 86400,
+      "access": "free_api_key",
+      "licence": "commercial",
+      "data_shape": ["part_number", "manufacturer", "price_gbp", "stock_quantity"],
+      "what_it_answers": "UK trade parts pricing",
+      "api_key_env": "RS_API_KEY",
+      "found_in": ["ptech_v0", "ptech_v0.3"]
+    },
+    {
+      "id": "octopus_tariffs",
+      "name": "Octopus Energy Tariffs",
+      "category": "energy_pricing",
+      "status": "ready",
+      "cadence_seconds": 86400,
+      "access": "free_api",
+      "licence": "open_api",
+      "data_shape": ["product", "tariff", "unit_rate_pence", "standing_charge"],
+      "what_it_answers": "What does household electricity cost?",
+      "found_in": ["ptech_v0", "ptech_v0.3"]
+    },
+    {
+      "id": "elexon",
+      "name": "Elexon Insights",
+      "category": "energy_grid",
+      "status": "ready",
+      "cadence_seconds": 1800,
+      "access": "free_api",
+      "licence": "open_data",
+      "data_shape": ["timestamp", "settlement_period", "demand_mw", "generation_mw", "imbalance_mw"],
+      "what_it_answers": "UK grid balance, wholesale power, imbalance",
+      "found_in": ["ptech_v0.3", "research_kernel", "probe_recovery"]
+    },
+    {
+      "id": "neso_tec",
+      "name": "NESO TEC Register",
+      "category": "future_capacity",
+      "status": "ready",
+      "cadence_seconds": 172800,
+      "access": "free_ckan",
+      "licence": "open_data",
+      "data_shape": ["project_id", "technology", "capacity_mw", "status", "connection_date"],
+      "what_it_answers": "What grid capacity is being built?",
+      "found_in": ["research_kernel", "scarcity_lab", "probe_recovery"]
+    },
+    {
+      "id": "find_tender",
+      "name": "Find a Tender OCDS",
+      "category": "procurement",
+      "status": "ready",
+      "cadence_seconds": 86400,
+      "access": "free_api",
+      "licence": "OGL",
+      "data_shape": ["notice_id", "title", "buyer", "value", "award_date"],
+      "what_it_answers": "What is government buying? What contracts are awarded?",
+      "found_in": ["ptech_v0.3", "research_kernel", "probe_recovery"]
+    },
+    {
+      "id": "contracts_finder",
+      "name": "Contracts Finder OCDS",
+      "category": "procurement",
+      "status": "ready",
+      "cadence_seconds": 86400,
+      "access": "free_api",
+      "licence": "OGL",
+      "data_shape": ["notice_id", "title", "buyer", "value", "award_date"],
+      "what_it_answers": "What is government buying at sub-national level?",
+      "found_in": ["ptech_v0.3", "research_kernel", "probe_recovery"]
+    },
+    {
+      "id": "openalex",
+      "name": "OpenAlex",
+      "category": "research_frontier",
+      "status": "ready",
+      "cadence_seconds": 86400,
+      "access": "free_no_key",
+      "licence": "open_data",
+      "data_shape": ["work_id", "title", "authorships", "topics", "cited_by_count"],
+      "what_it_answers": "Where is research effort moving?",
+      "found_in": ["research_kernel"]
+    },
+    {
+      "id": "github_releases",
+      "name": "GitHub Releases",
+      "category": "software_frontier",
+      "status": "ready",
+      "cadence_seconds": 3600,
+      "access": "free_limited",
+      "licence": "varies",
+      "data_shape": ["repo", "tag", "published_at", "body"],
+      "what_it_answers": "What software changed and when?",
+      "found_in": ["research_kernel"]
+    },
+    {
+      "id": "hmrc_trade",
+      "name": "HMRC UK Trade Info",
+      "category": "trade_flows",
+      "status": "ready",
+      "cadence_seconds": 86400,
+      "access": "free_api",
+      "licence": "OGL",
+      "data_shape": ["commodity", "country", "month", "value_gbp", "weight_kg"],
+      "what_it_answers": "What is the UK importing/exporting?",
+      "found_in": ["research_kernel", "scarcity_lab"]
+    },
+    {
+      "id": "ons_labour",
+      "name": "ONS Labour Demand",
+      "category": "labour_skill",
+      "status": "ready",
+      "cadence_seconds": 2592000,
+      "access": "free_bulk",
+      "licence": "OGL",
+      "data_shape": ["soc_code", "occupation", "job_ads", "period"],
+      "what_it_answers": "Which occupations are in demand?",
+      "found_in": ["research_kernel", "scarcity_lab"]
+    },
+    {
+      "id": "skills_england",
+      "name": "Skills England Occupational Maps",
+      "category": "labour_skill",
+      "status": "ready",
+      "cadence_seconds": 2592000,
+      "access": "free_api",
+      "licence": "OGL",
+      "data_shape": ["occupation", "duties", "ksbs", "training_products"],
+      "what_it_answers": "What skills map to which occupations?",
+      "found_in": ["ptech_v0.3", "research_kernel"]
+    },
+    {
+      "id": "adzuna_jobs",
+      "name": "Adzuna Jobs API",
+      "category": "labour_skill",
+      "status": "ready",
+      "cadence_seconds": 3600,
+      "access": "free_api_key",
+      "licence": "commercial",
+      "data_shape": ["title", "company", "location", "salary_min", "salary_max", "skills"],
+      "what_it_answers": "What jobs are available and what do they pay?",
+      "api_key_env": "ADZUNA_APP_ID",
+      "found_in": ["ptech_v0.3", "research_kernel"]
+    },
+    {
+      "id": "blender_open_data",
+      "name": "Blender Open Data",
+      "category": "hardware_benchmark",
+      "status": "ready",
+      "cadence_seconds": 604800,
+      "access": "free_bulk",
+      "licence": "open_data",
+      "data_shape": ["device", "benchmark_score", "os", "driver"],
+      "what_it_answers": "How do GPUs/CPUs perform in practice?",
+      "found_in": ["ptech_v0", "ptech_v0.3"]
+    },
+    {
+      "id": "mlperf",
+      "name": "MLPerf Inference",
+      "category": "hardware_benchmark",
+      "status": "ready",
+      "cadence_seconds": 2592000,
+      "access": "free_git",
+      "licence": "open",
+      "data_shape": ["system", "model", "throughput", "latency"],
+      "what_it_answers": "How do AI accelerators perform?",
+      "found_in": ["ptech_v0", "ptech_v0.3", "research_kernel"]
+    },
+    {
+      "id": "reddit_uk_intent",
+      "name": "Reddit UK Consumer Intent",
+      "category": "consumer_intent",
+      "status": "ready",
+      "cadence_seconds": 3600,
+      "access": "free_scrape",
+      "licence": "reddit_tos",
+      "data_shape": ["subreddit", "title", "body", "budget", "constraints", "intent_type"],
+      "what_it_answers": "What do UK consumers want to buy?",
+      "found_in": ["wantgraph"]
+    },
+    {
+      "id": "uk_retail_scrapers",
+      "name": "UK Retail Product Scrapers",
+      "category": "retail_pricing",
+      "status": "ready",
+      "cadence_seconds": 43200,
+      "access": "free_scrape",
+      "licence": "tos",
+      "data_shape": ["retailer", "sku", "price", "availability", "mpn", "gtin"],
+      "what_it_answers": "What do UK retailers charge for specific products?",
+      "notes": "40+ retailers: Screwfix, Toolstation, Tesco, Wickes, etc.",
+      "found_in": ["marketgraph"]
+    },
+    {
+      "id": "char_gy_ocpi",
+      "name": "char.gy OCPI",
+      "category": "ev_infrastructure",
+      "status": "ready",
+      "cadence_seconds": 60,
+      "access": "free_ocpi",
+      "licence": "OGL",
+      "data_shape": ["evse_id", "status", "tariff", "connector"],
+      "what_it_answers": "Live state of char.gy EV charge points",
+      "found_in": ["probe_recovery"]
+    },
+    {
+      "id": "nged_connected_data",
+      "name": "NGED Connected Data",
+      "category": "grid_infrastructure",
+      "status": "ready",
+      "cadence_seconds": 300,
+      "access": "free_ckan",
+      "licence": "open_data",
+      "data_shape": ["transformer_id", "flow_kw", "timestamp", "zone"],
+      "what_it_answers": "UK grid transformer loading in real-time",
+      "found_in": ["probe_recovery"]
+    },
+    {
+      "id": "defra_dwt",
+      "name": "DEFRA Digital Waste Tracking",
+      "category": "waste_tracking",
+      "status": "ready",
+      "cadence_seconds": 86400,
+      "access": "free_api",
+      "licence": "OGL",
+      "data_shape": ["waste_type", "quantity", "origin", "destination", "date"],
+      "what_it_answers": "Where does waste go? Who handles e-waste?",
+      "found_in": ["probe_recovery"]
+    },
+    {
+      "id": "uk_payments_register",
+      "name": "UK Payments Transparency Register",
+      "category": "company_financials",
+      "status": "ready",
+      "cadence_seconds": 86400,
+      "access": "free_bulk",
+      "licence": "OGL",
+      "data_shape": ["buyer", "supplier", "amount", "days_to_pay"],
+      "what_it_answers": "Which companies pay their suppliers late?",
+      "found_in": ["probe_recovery"]
+    },
+    {
+      "id": "mcs_installers",
+      "name": "MCS Installer Directory",
+      "category": "service_providers",
+      "status": "ready",
+      "cadence_seconds": 604800,
+      "access": "free_search",
+      "licence": "terms_review",
+      "data_shape": ["installer_id", "name", "location", "certifications", "technology"],
+      "what_it_answers": "Who installs solar/heat pumps/batteries in the UK?",
+      "found_in": ["ptech_v0.3", "probe_recovery"]
+    },
+    {
+      "id": "bgs_minerals",
+      "name": "BGS World Mineral Statistics",
+      "category": "materials",
+      "status": "planned",
+      "cadence_seconds": 2592000,
+      "access": "free_api",
+      "licence": "OGL",
+      "data_shape": ["commodity", "country", "year", "production_tonnes"],
+      "what_it_answers": "Where are raw materials produced?",
+      "found_in": ["scarcity_lab"]
+    },
+    {
+      "id": "usgs_minerals",
+      "name": "USGS Mineral Commodity Summaries",
+      "category": "materials",
+      "status": "planned",
+      "cadence_seconds": 2592000,
+      "access": "free_download",
+      "licence": "CC0",
+      "data_shape": ["commodity", "production", "consumption", "recycling_rate"],
+      "what_it_answers": "Global mineral supply and demand",
+      "found_in": ["research_kernel"]
+    },
+    {
+      "id": "sec_edgar",
+      "name": "SEC EDGAR",
+      "category": "company_financials",
+      "status": "planned",
+      "cadence_seconds": 86400,
+      "access": "free_no_key",
+      "licence": "open_data",
+      "data_shape": ["company", "filing_type", "date", "xbrl_data"],
+      "what_it_answers": "What are public companies reporting?",
+      "found_in": ["research_kernel"]
+    },
+    {
+      "id": "epc_england",
+      "name": "EPC England & Wales",
+      "category": "built_environment",
+      "status": "planned",
+      "cadence_seconds": 2592000,
+      "access": "free_bulk",
+      "licence": "OGL",
+      "data_shape": ["uprn", "rating", "band", "heating", "solar"],
+      "what_it_answers": "Which buildings need energy retrofit?",
+      "found_in": ["ptech_v0.3"]
+    },
+    {
+      "id": "openstreetmap",
+      "name": "OpenStreetMap UK",
+      "category": "geography",
+      "status": "planned",
+      "cadence_seconds": 604800,
+      "access": "free_pbf",
+      "licence": "ODbL",
+      "data_shape": ["osm_id", "type", "name", "address", "coordinates"],
+      "what_it_answers": "Where are repair shops, suppliers, infrastructure?",
+      "found_in": ["ptech_v0", "ptech_v0.3"]
     }
   ]
 }
