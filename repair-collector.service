@@ -1,0 +1,18 @@
+[Unit]
+Description=Repair Garden Collector Daemon
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/repair
+ExecStart=/usr/bin/python3 /home/ubuntu/repair/daemon.py --loop --interval 3600
+Restart=always
+RestartSec=60
+Environment=PYTHONUNBUFFERED=1
+
+# API keys (set these)
+EnvironmentFile=-/home/ubuntu/repair/.env
+
+[Install]
+WantedBy=multi-user.target
