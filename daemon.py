@@ -3,71 +3,73 @@
 Runs all collectors on a schedule. Each source has its own cadence.
 Logs everything to SQLite. Supports graceful shutdown.
 
+The daemon ONLY schedules. Collectors own their own collector_run records.
+The daemon only logs a run if the process never starts, crashes, or times out.
+
 Usage:
-    python daemon.py                # run once
-    python daemon.py --loop         # run on schedule
-    python daemon.py --loop --interval 3600  # custom interval
+    python3 daemon.py                # run once
+    python3 daemon.py --loop         # run on schedule
+    python3 daemon.py --status       # show health
+    python3 daemon.py --init-db      # initialize database only
 """
 
 import os
 import sys
 import time
 import signal
-import json
 import subprocess
 import argparse
 from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from shared.db import init_db
-from shared.persist import log_run
+from shared.db import init_db, get_db
 
 BASE_DIR = Path(__file__).parent
 
-# Source configurations: name, script path, cadence_seconds, enabled
+# Source configurations: module path, cadence_seconds, enabled
 SOURCES = [
     {
         'id': 'cex',
-        'script': 'collectors/cex_collector.py',
+        'module': 'collectors.cex_collector',
+        'class': 'CexCollector',
         'cadence': 3600 * 6,   # every 6 hours
         'enabled': True,
-        'args': [],
     },
     {
         'id': 'open_repair',
-        'script': 'collectors/open_repair_collector.py',
+        'module': 'collectors.open_repair_collector',
+        'class': 'OpenRepairCollector',
         'cadence': 3600 * 24,  # daily
         'enabled': True,
-        'args': [],
     },
     {
         'id': 'robotshop_uk',
-        'script': 'collectors/robotshop_collector.py',
+        'module': 'collectors.robotshop_collector',
+        'class': 'RobotShopCollector',
         'cadence': 3600 * 12,  # every 12 hours
         'enabled': True,
-        'args': [],
     },
     {
         'id': 'trade_pricing',
-        'script': 'collectors/trade_collector.py',
+        'module': 'collectors.trade_collector',
+        'class': 'ScrewfixToolstationCollector',
         'cadence': 3600 * 12,  # every 12 hours
         'enabled': True,
-        'args': [],
     },
     {
         'id': 'partsdb',
-        'script': 'collectors/partsdb_collector.py',
+        'module': 'collectors.partsdb_collector',
+        'class': 'PartsDBCollector',
         'cadence': 3600 * 24,  # daily
         'enabled': bool(os.environ.get('PARTSDB_API_KEY')),
-        'args': [],
     },
     {
         'id': 'opss_recalls',
-        'script': 'collectors/opss_historical.py',
+        'module': 'collectors.opss_historical',
+        'class': 'OpssCollector',
         'cadence': 3600 * 24,  # daily
         'enabled': True,
-        'args': [],
     },
 ]
 
@@ -88,20 +90,20 @@ signal.signal(signal.SIGTERM, signal_handler)
 
 
 def run_collector(source):
-    """Run a single collector and log to SQLite."""
-    source_id = source['id']
-    script = BASE_DIR / source['script']
+    """Run a single collector via python -m.
 
-    if not script.exists():
-        print(f"  [{source_id}] Script not found: {script}")
-        return False
+    The collector owns its own collector_run record via BaseCollector.
+    The daemon only logs if the process itself fails.
+    """
+    source_id = source['id']
+    module = source['module']
 
     started_at = datetime.now(timezone.utc).isoformat()
-    print(f"  [{source_id}] Starting collection...")
+    print(f"  [{source_id}] Starting...")
 
     try:
         result = subprocess.run(
-            [sys.executable, str(script)] + source.get('args', []),
+            [sys.executable, '-m', module],
             capture_output=True,
             text=True,
             timeout=600,
@@ -111,27 +113,40 @@ def run_collector(source):
         finished_at = datetime.now(timezone.utc).isoformat()
 
         if result.returncode == 0:
-            log_run(source_id, 'ok', started_at=started_at, finished_at=finished_at)
+            # Collector ran successfully — it logged its own run.
+            # Daemon does NOT create a duplicate record.
             print(f"  [{source_id}] OK")
             return True
         else:
+            # Process failed — daemon logs this failure.
             error = result.stderr[:500] if result.stderr else 'unknown error'
-            log_run(source_id, 'error', error=error, started_at=started_at, finished_at=finished_at)
+            _log_daemon_run(source_id, 'error', error, started_at, finished_at)
             print(f"  [{source_id}] ERROR: {error[:100]}")
             return False
 
     except subprocess.TimeoutExpired:
         finished_at = datetime.now(timezone.utc).isoformat()
-        log_run(source_id, 'error', error='timeout after 600s',
-                started_at=started_at, finished_at=finished_at)
+        _log_daemon_run(source_id, 'error', 'timeout after 600s', started_at, finished_at)
         print(f"  [{source_id}] TIMEOUT")
         return False
     except Exception as e:
         finished_at = datetime.now(timezone.utc).isoformat()
-        log_run(source_id, 'error', error=str(e)[:500],
-                started_at=started_at, finished_at=finished_at)
+        _log_daemon_run(source_id, 'error', str(e)[:500], started_at, finished_at)
         print(f"  [{source_id}] EXCEPTION: {e}")
         return False
+
+
+def _log_daemon_run(source_id, status, error, started_at, finished_at):
+    """Only log daemon-level failures (process crash, timeout)."""
+    conn = get_db()
+    conn.execute(
+        "INSERT INTO collector_run "
+        "(source_id, started_at, finished_at, status, error) "
+        "VALUES (?, ?, ?, ?, ?)",
+        (source_id, started_at, finished_at, f'daemon_{status}', error)
+    )
+    conn.commit()
+    conn.close()
 
 
 def should_run(source):
@@ -190,6 +205,43 @@ def loop(interval=3600):
     print("Daemon stopped.")
 
 
+def show_status():
+    """Show health status of all collectors."""
+    conn = get_db()
+    print("\n=== COLLECTOR HEALTH STATUS ===\n")
+
+    for source in SOURCES:
+        source_id = source['id']
+        enabled = source.get('enabled', True)
+
+        row = conn.execute(
+            "SELECT status, finished_at, source_records_new, error "
+            "FROM collector_run WHERE source_id = ? ORDER BY finished_at DESC LIMIT 1",
+            (source_id,)
+        ).fetchone()
+
+        if row:
+            status, last_run, new, error = row
+            lr = (last_run or '')[:19]
+            err_str = f" err={error[:40]}" if error else ""
+            print(f"  {source_id:20s}  {status:12s}  last: {lr}  new: {new or 0}{err_str}")
+        else:
+            print(f"  {source_id:20s}  {'no_run':12s}  (never run)")
+
+        if not enabled:
+            print(f"  {'':20s}  ⚠ DISABLED (needs API key)")
+
+    # Summary
+    rows = conn.execute(
+        "SELECT source_id, COUNT(*) as runs, MAX(finished_at) as last "
+        "FROM collector_run GROUP BY source_id"
+    ).fetchall()
+
+    print(f"\n  Total sources: {len(SOURCES)}")
+    print(f"  Active collectors: {len(rows)}")
+    conn.close()
+
+
 def main():
     parser = argparse.ArgumentParser(description='Repair Garden Collector Daemon')
     parser.add_argument('--loop', action='store_true', help='Run on schedule')
@@ -211,47 +263,6 @@ def main():
         loop(args.interval)
     else:
         run_once()
-
-
-def show_status():
-    """Show health status of all collectors."""
-    from shared.persist import get_db
-
-    conn = get_db()
-    print("\n=== COLLECTOR HEALTH STATUS ===\n")
-
-    for source in SOURCES:
-        source_id = source['id']
-        enabled = source.get('enabled', True)
-        cadence = source.get('cadence', 3600)
-
-        # Get last run
-        row = conn.execute(
-            "SELECT status, finished_at, raw_fetched, source_records_new, error "
-            "FROM collector_run WHERE source_id = ? ORDER BY finished_at DESC LIMIT 1",
-            (source_id,)
-        ).fetchone()
-
-        if row:
-            status, last_run, fetched, new, error = row
-            lr = (last_run or '')[:19]
-            err_str = f" err={error[:40]}" if error else ""
-            print(f"  {source_id:20s}  {status:8s}  last: {lr}  records: {fetched or 0}>{new or 0}{err_str}")
-        else:
-            print(f"  {source_id:20s}  {'no_run':8s}  (never run)")
-
-        if not enabled:
-            print(f"  {'':20s}  ⚠ DISABLED (needs API key)")
-
-    # Summary
-    rows = conn.execute(
-        "SELECT source_id, COUNT(*) as runs, MAX(finished_at) as last "
-        "FROM collector_run GROUP BY source_id"
-    ).fetchall()
-
-    print(f"\n  Total sources: {len(SOURCES)}")
-    print(f"  Active collectors: {len(rows)}")
-    conn.close()
 
 
 if __name__ == '__main__':

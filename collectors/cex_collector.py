@@ -120,16 +120,22 @@ class CexCollector(BaseCollector):
                 result.records_unchanged += 1
 
             # Always store market observation (even when unchanged)
+            # CeX gives us 3 prices: sell (ask), buy (bid), exchange
             sell_price = item.get('sell_price')
-            if sell_price is not None:
+            buy_price = item.get('buy_price')
+            exchange_price = item.get('exchange_price')
+            if sell_price is not None or buy_price is not None:
                 store_market_observation(
                     source_record_id=ir.record_id,
                     observed_at=datetime.now(timezone.utc).isoformat(),
-                    price=float(sell_price),
+                    price=float(sell_price) if sell_price is not None else None,
+                    bid_price=float(buy_price) if buy_price is not None else None,
+                    exchange_price=float(exchange_price) if exchange_price is not None else None,
                     currency='GBP',
-                    availability='in_stock' if sell_price else 'out_of_stock',
                     condition=item.get('grade', ''),
                     market='cex',
+                    observation_type='cex_quote',
+                    source_native_id=native_id,
                 )
 
 

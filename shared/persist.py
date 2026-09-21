@@ -4,6 +4,7 @@ Every collector uses these. No hand-written SQL inserts.
 Returns InsertResult so callers know what happened.
 
 Schema authority: shared/db.py is the single source of truth.
+DB path authority: shared/db.py::get_db_path() is the single source of truth.
 """
 
 import hashlib
@@ -14,11 +15,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
-from shared.db import SCHEMA
-
-
-def _db_path():
-    return Path(os.environ.get('REPAIR_DB', str(Path(__file__).parent.parent / 'warehouse' / 'repair.db')))
+from shared.db import SCHEMA, get_db_path
 
 
 @dataclass
@@ -54,7 +51,7 @@ class Acquisition:
 
 def get_db():
     """Get database connection. Creates tables from canonical schema if needed."""
-    db_path = _db_path()
+    db_path = get_db_path()
     db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(db_path))
     conn.executescript(SCHEMA)
@@ -65,7 +62,7 @@ def get_db():
 def store_raw(content: bytes, source_id: str, content_type: str = 'application/octet-stream') -> RawStoreResult:
     """Store raw content immutably. Returns RawStoreResult. Idempotent."""
     sha256 = hashlib.sha256(content).hexdigest()
-    raw_dir = _db_path().parent / 'raw' / source_id
+    raw_dir = get_db_path().parent / 'raw' / source_id
     raw_dir.mkdir(parents=True, exist_ok=True)
     raw_path = raw_dir / f'{sha256}.gz'
 
@@ -124,11 +121,11 @@ def insert_source_record(source_id: str, dataset: str, native_id: str,
 
     conn = get_db()
 
-    # Find the LATEST version (base or most recent version)
+    # Find the LATEST version (by time, not by lexicographic hash ID)
     existing = conn.execute(
         "SELECT source_record_id, payload_hash FROM source_record "
         "WHERE source_record_id = ? OR source_record_id LIKE ? "
-        "ORDER BY source_record_id DESC LIMIT 1",
+        "ORDER BY retrieved_at DESC LIMIT 1",
         (record_id, f'{record_id}:v%')
     ).fetchone()
 
@@ -224,9 +221,14 @@ def log_run(source_id: str, status: str, raw_fetched: int = 0, raw_new: int = 0,
 
 
 def store_market_observation(source_record_id: str, observed_at: str,
-                              price: float, currency: str = 'GBP',
+                              price: float = None, currency: str = 'GBP',
+                              bid_price: float = None, exchange_price: float = None,
                               stock: str = None, availability: str = None,
                               condition: str = None, market: str = '',
+                              observation_type: str = 'price',
+                              acquisition_id: int = None,
+                              collector_run_id: int = None,
+                              source_native_id: str = '',
                               extra_json: str = ''):
     """Store a market observation snapshot. Always appends — even unchanged prices matter.
 
@@ -236,10 +238,13 @@ def store_market_observation(source_record_id: str, observed_at: str,
     conn = get_db()
     conn.execute(
         "INSERT INTO market_observation "
-        "(source_record_id, observed_at, price, currency, stock, availability, "
-        "condition, market, extra_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        (source_record_id, observed_at, price, currency, stock, availability,
-         condition, market, extra_json)
+        "(source_record_id, acquisition_id, collector_run_id, source_native_id, "
+        "observation_type, observed_at, price, bid_price, exchange_price, currency, "
+        "stock, availability, condition, market, extra_json) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (source_record_id, acquisition_id, collector_run_id, source_native_id,
+         observation_type, observed_at, price, bid_price, exchange_price, currency,
+         stock, availability, condition, market, extra_json)
     )
     conn.commit()
     conn.close()

@@ -9,8 +9,10 @@ import time
 from .base import BaseCollector, CollectorResult
 from shared.persist import insert_source_record
 
-# MPN cohort to track — repair-derived (commonly failed components)
-MPN_COHORT = [
+# Electronics baseline cohort — NOT repair-derived yet.
+# This is a control group of common components for price tracking.
+# A true repair-derived cohort would come from: device → fault → failed component → MPN.
+MPN_BASELINE = [
     'STM32F407VGT6', 'STM32F103C8T6', 'ATmega328P',
     'ESP32-WROOM-32', 'ESP32-S3-WROOM-1',
     'RP2040', 'nRF52840',
@@ -41,7 +43,7 @@ class PartsDBCollector(BaseCollector):
     def fetch(self):
         """Fetch component data for MPN cohort."""
         all_items = []
-        for mpn in MPN_COHORT:
+        for mpn in MPN_BASELINE:
             items = self._search_mpn(mpn)
             all_items.extend(items)
             time.sleep(1)
@@ -52,6 +54,9 @@ class PartsDBCollector(BaseCollector):
         try:
             url = f'{self.API_BASE}/search?q={mpn}&limit=5'
             self._last_url = url
+            headers = {}
+            if self.api_key:
+                headers['Authorization'] = f'Bearer {self.api_key}'
             resp = self._fetch_url(url, timeout=15)
             if resp and resp.status_code == 200:
                 self._last_status = resp.status_code

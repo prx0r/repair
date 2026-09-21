@@ -86,13 +86,15 @@ class CollectorHealth:
 
 def health_from_run_result(collector_id: str, source_id: str, result) -> CollectorHealth:
     """Create CollectorHealth from a BaseCollector run result."""
+    # records_seen = total records processed (not raw fetches)
+    records_seen = result.records_new + result.records_changed + result.records_unchanged + result.records_invalid
     health = CollectorHealth(
         collector_id=collector_id,
         source_id=source_id,
         last_attempt=result.finished_at or datetime.now(timezone.utc).isoformat(),
         last_success=result.finished_at if not result.errors else "",
         last_error=json.dumps(result.errors) if result.errors else None,
-        records_seen=result.raw_fetched,
+        records_seen=records_seen,
         records_new=result.records_new,
         records_changed=result.records_changed,
         records_unchanged=result.records_unchanged,
