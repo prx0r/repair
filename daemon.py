@@ -195,6 +195,7 @@ def main():
     parser.add_argument('--loop', action='store_true', help='Run on schedule')
     parser.add_argument('--interval', type=int, default=3600, help='Loop interval in seconds')
     parser.add_argument('--init-db', action='store_true', help='Initialize database only')
+    parser.add_argument('--status', action='store_true', help='Show collector health status')
     args = parser.parse_args()
 
     init_db()
@@ -202,10 +203,55 @@ def main():
     if args.init_db:
         return
 
+    if args.status:
+        show_status()
+        return
+
     if args.loop:
         loop(args.interval)
     else:
         run_once()
+
+
+def show_status():
+    """Show health status of all collectors."""
+    from shared.persist import get_db
+
+    conn = get_db()
+    print("\n=== COLLECTOR HEALTH STATUS ===\n")
+
+    for source in SOURCES:
+        source_id = source['id']
+        enabled = source.get('enabled', True)
+        cadence = source.get('cadence', 3600)
+
+        # Get last run
+        row = conn.execute(
+            "SELECT status, finished_at, raw_fetched, source_records_new, error "
+            "FROM collector_run WHERE source_id = ? ORDER BY finished_at DESC LIMIT 1",
+            (source_id,)
+        ).fetchone()
+
+        if row:
+            status, last_run, fetched, new, error = row
+            lr = (last_run or '')[:19]
+            err_str = f" err={error[:40]}" if error else ""
+            print(f"  {source_id:20s}  {status:8s}  last: {lr}  records: {fetched or 0}>{new or 0}{err_str}")
+        else:
+            print(f"  {source_id:20s}  {'no_run':8s}  (never run)")
+
+        if not enabled:
+            print(f"  {'':20s}  ⚠ DISABLED (needs API key)")
+
+    # Summary
+    rows = conn.execute(
+        "SELECT source_id, COUNT(*) as runs, MAX(finished_at) as last "
+        "FROM collector_run GROUP BY source_id"
+    ).fetchall()
+
+    print(f"\n  Total sources: {len(SOURCES)}")
+    print(f"  Active collectors: {len(rows)}")
+    conn.close()
 
 
 if __name__ == '__main__':

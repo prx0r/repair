@@ -347,5 +347,97 @@ class TestBaseCollector:
         assert result.records_unchanged == 3
 
 
+class TestHealth:
+    def test_health_computes_ok(self):
+        from layer1.health import CollectorHealth
+        h = CollectorHealth(collector_id="test", source_id="test", records_seen=20)
+        h.compute_status(expected_min_rows=10)
+        assert h.status == "ok"
+
+    def test_health_computes_blocked(self):
+        from layer1.health import CollectorHealth
+        h = CollectorHealth(collector_id="test", source_id="test", http_status=403)
+        h.compute_status()
+        assert h.status == "blocked"
+        assert "blocked" in h.status_reason.lower()
+
+    def test_health_computes_degraded_no_data(self):
+        from layer1.health import CollectorHealth
+        h = CollectorHealth(collector_id="test", source_id="test", records_seen=0)
+        h.compute_status(expected_min_rows=10)
+        assert h.status == "degraded"
+
+    def test_health_computes_error(self):
+        from layer1.health import CollectorHealth
+        h = CollectorHealth(collector_id="test", source_id="test", last_error="timeout")
+        h.compute_status()
+        assert h.status == "error"
+
+    def test_health_to_json(self):
+        from layer1.health import CollectorHealth
+        h = CollectorHealth(collector_id="test", source_id="test")
+        j = h.to_json()
+        parsed = json.loads(j)
+        assert parsed["collector_id"] == "test"
+
+    def test_health_from_run_result(self):
+        from collectors.base import CollectorResult
+        from layer1.health import health_from_run_result
+        result = CollectorResult()
+        result.records_new = 5
+        result.finished_at = "2026-09-21T12:00:00"
+        health = health_from_run_result("test", "test", result)
+        assert health.status == "ok"
+        assert health.records_new == 5
+
+
+class TestMarketObservation:
+    def test_market_observation_via_persist(self, temp_db):
+        """store_market_observation should work through persist module."""
+        from shared.persist import store_market_observation
+        from datetime import datetime, timezone
+
+        ir = insert_source_record('cex', 'uk', 'box999',
+                                   {'name': 'test', 'sell_price': 50}, 'h', 'p')
+        store_market_observation(
+            source_record_id=ir.record_id,
+            observed_at=datetime.now(timezone.utc).isoformat(),
+            price=50.0,
+            currency='GBP',
+            market='cex',
+        )
+        conn = sqlite3.connect(str(temp_db))
+        count = conn.execute('SELECT COUNT(*) FROM market_observation').fetchone()[0]
+        assert count == 1
+        conn.close()
+
+
+class TestExport:
+    def test_export_produces_files(self, tmp_path):
+        """Export should produce JSONL files."""
+        os.environ['REPAIR_DB'] = str(tmp_path / 'test.db')
+        # Initialize DB
+        conn = sqlite3.connect(str(tmp_path / 'test.db'))
+        from shared.db import SCHEMA
+        conn.executescript(SCHEMA)
+        # Add a test record
+        conn.execute(
+            "INSERT INTO source_record "
+            "(source_record_id, source_id, dataset, source_native_id, "
+            "retrieved_at, normalized_json, payload_hash, raw_payload_hash, "
+            "parser_id, parser_version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            ('test:native1', 'test_source', 'test', 'native1',
+             '2026-09-21', json.dumps({'name': 'test'}), 'hash1', 'raw1',
+             'parser', '1.0')
+        )
+        conn.commit()
+        conn.close()
+
+        from export_k1 import export_all
+        stats = export_all(output_dir=str(tmp_path / 'k1_out'))
+        assert stats['node'] >= 1
+        assert (tmp_path / 'k1_out' / 'node.jsonl').exists()
+
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])

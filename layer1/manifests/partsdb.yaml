@@ -1,0 +1,50 @@
+# Layer 1 Source Manifest — PartsDB.io
+
+id: partsdb
+name: PartsDB.io
+layer: 1
+garden: repair
+
+answers:
+  - what_component?
+  - what_cost?
+
+source:
+  authority: PartsDB.io
+  type: api
+  url: https://api.partsdb.io/v1
+  format: json
+  auth: api_key
+
+collection:
+  cadence: daily
+  backfill_from: null
+  method: http_get
+  parser: partsdb_api_v1
+
+storage:
+  raw: true
+  append_only: true
+  content_addressed: true
+  schema: source_record
+
+time:
+  source_timestamp_field: null
+  observed_at: true
+  append_only: true
+
+health:
+  expected_min_rows: 10
+  max_staleness_hours: 48
+  required_fields:
+    - mpn
+    - manufacturer
+
+license:
+  name: proprietary
+  redistribution: restricted
+
+export:
+  k1_format: true
+  node_kind: component
+  observation_metric: price_eur

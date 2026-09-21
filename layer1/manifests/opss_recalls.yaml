@@ -1,0 +1,50 @@
+# Layer 1 Source Manifest — OPSS Product Recalls
+
+id: opss_recalls
+name: UK OPSS Product Recalls
+layer: 1
+garden: repair
+
+answers:
+  - what_failed?
+  - what_object?
+
+source:
+  authority: Office for Product Safety and Standards
+  type: html_parse
+  url: https://www.gov.uk/guidance/product-recalls-and-alerts
+  format: html
+
+collection:
+  cadence: daily
+  backfill_from: "2020-01-01"
+  method: http_get
+  parser: opss_html_v1
+
+storage:
+  raw: true
+  append_only: true
+  content_addressed: true
+  schema: source_record
+
+time:
+  source_timestamp_field: published_at
+  observed_at: true
+  append_only: true
+
+health:
+  expected_min_rows: 10
+  max_staleness_hours: 48
+  required_fields:
+    - product_name
+    - hazard
+    - recall_type
+
+license:
+  name: OGL
+  redistribution: allowed
+
+export:
+  k1_format: true
+  node_kind: recall
+  edge_pattern: product_REQUIRES_recall
