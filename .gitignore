@@ -30,3 +30,4 @@ exports/
 *.pid
 .DS_Store
 Thumbs.db
+warehouse/repair.db
