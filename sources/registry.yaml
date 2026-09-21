@@ -1,243 +1,167 @@
-# Repair Garden — Source Registry (YAML)
-# Machine-readable source definitions with snapshot_required flag
-# Collection priority: (future_value × ephemerality) / collection_cost
+# Repair Garden — Source Registry
+# Machine-readable source definitions
 
 sources:
-  # === CAPABILITY ===
-  - id: competent_person_register
-    garden: repair
-    domain: capability
-    name: Registered Competent Person Electrical
-    access:
-      type: web_search
-      cadence: daily
-    temporal:
-      recoverability: ephemeral
-      snapshot_required: true
-    rights:
-      raw_storage: true
-      derivatives: true
-    produces:
-      - provider
-      - certification
-      - capability
-      - geography
-
-  - id: mcs_installer_register
-    garden: repair
-    domain: capability
-    name: MCS Installer Register
-    access:
-      type: dashboard
-      cadence: daily
-    temporal:
-      recoverability: ephemeral
-      snapshot_required: true
-    produces:
-      - provider
-      - certification
-      - capability
-
-  - id: ozev_installers
-    garden: repair
-    domain: capability
-    name: OZEV Approved Chargepoint Installers
-    access:
-      type: public_search
-      cadence: weekly
-    temporal:
-      recoverability: recently_recoverable
-      snapshot_required: false
-    produces:
-      - provider
-      - certification
-      - capability
-
-  # === TRAINING ===
-  - id: uk_apprenticeship_api
-    garden: repair
-    domain: training
-    name: UK Apprenticeship Display Advert API
-    access:
-      type: api
-      auth: api_key_free
-      cadence: daily
-    temporal:
-      recoverability: ephemeral
-      snapshot_required: true
-    produces:
-      - training_vacancy
-      - capability
-      - geography
-
-  - id: ons_job_ads
-    garden: repair
-    domain: training
-    name: ONS Labour Demand by SOC
-    access:
-      type: bulk_csv
-      cadence: monthly
-    temporal:
-      recoverability: backfillable
-      snapshot_required: false
-    produces:
-      - occupation_demand
-      - capability
-
-  # === LABOUR ===
-  - id: adzuna_jobs
-    garden: repair
-    domain: labour
-    name: Adzuna Jobs API
-    access:
-      type: api
-      auth: api_key
-      cadence: hourly
-    temporal:
-      recoverability: ephemeral
-      snapshot_required: true
-    produces:
-      - vacancy
-      - salary
-      - geography
-      - capability
-
-  # === BUSINESSES ===
-  - id: companies_house
-    garden: repair
-    domain: businesses
-    name: Companies House REST API
-    access:
-      type: api
-      auth: api_key
-      cadence: daily
-    temporal:
-      recoverability: recently_recoverable
-      snapshot_required: false
-    rights:
-      raw_storage: true
-      derivatives: true
-    produces:
-      - company
-      - geography
-      - capability
-
-  - id: companies_house_stream
-    garden: repair
-    domain: businesses
-    name: Companies House Streaming API
-    access:
-      type: http_stream
-      auth: stream_key
-      cadence: continuous
-    temporal:
-      recoverability: ephemeral
-      snapshot_required: true
-    rights:
-      raw_storage: true
-      derivatives: true
-    produces:
-      - company_event
-
-  # === DEMAND ===
-  - id: contracts_finder
-    garden: repair
-    domain: demand
-    name: Contracts Finder OCDS
-    access:
-      type: api
-      cadence: daily
-    temporal:
-      recoverability: backfillable
-      snapshot_required: false
-    produces:
-      - procurement_opportunity
-      - capability
-      - geography
-
-  - id: find_a_tender
-    garden: repair
-    domain: demand
-    name: Find a Tender OCDS
-    access:
-      type: api
-      cadence: daily
-    temporal:
-      recoverability: backfillable
-      snapshot_required: false
-    produces:
-      - procurement_opportunity
-
-  - id: planning_data
-    garden: repair
-    domain: demand
-    name: UK Planning Applications
-    access:
-      type: api
-      cadence: daily
-    temporal:
-      recoverability: backfillable
-      snapshot_required: false
-    produces:
-      - planning_application
-      - geography
-
-  # === REPAIR (physical objects) ===
-  - id: open_repair_alliance
-    garden: repair
-    domain: repair_failure
+  # === PRIORITY 1: CORE REPAIR DATA ===
+  - id: open_repair
     name: Open Repair Alliance
+    domain: repair_failure
+    description: "305K+ real repair attempts from EU repair cafés"
+    why: "Empirical fault/success/failure data — the foundation"
+    status: operational
+    records: 305649
+    collector: collectors/open_repair_collector.py
     access:
       type: bulk_csv
+      url: https://raw.githubusercontent.com/openrepair/data/master/aggregated/202507/OpenRepairData_v0.3_aggregate_202507.csv
       cadence: weekly
     temporal:
       recoverability: backfillable
       snapshot_required: false
-    licence: CC-BY-SA-4.0
+    rights:
+      licence: CC-BY-SA-4.0
+      raw_storage: true
+      derivatives: true
     produces:
       - repair_record
       - device
       - fault
 
   - id: ebay_3market
-    garden: repair
+    name: eBay UK 3-Market
     domain: market_tape
-    name: eBay UK 3-Market (broken/working/parts)
+    description: "Broken, working, and parts market prices"
+    why: "Depreciation curves, repair spread, liquidity"
+    status: blocked_vps
+    collector: collectors/ebay_collector.py
     access:
       type: scrape
       cadence: 6-hourly
     temporal:
       recoverability: ephemeral
       snapshot_required: true
-    produces:
-      - listing
-      - device
-      - price_curve
 
   - id: opss_recalls
-    garden: repair
-    domain: safety
     name: UK OPSS Product Recalls
+    domain: safety
+    description: "Product safety recalls and alerts"
+    why: "Known defects, safety layer, failure precursors"
+    status: needs_parser
     access:
-      type: rss_feed
+      type: html_parse
+      url: https://www.gov.uk/guidance/product-recalls-and-alerts
       cadence: daily
     temporal:
       recoverability: backfillable
       snapshot_required: false
-    produces:
-      - recall
-      - device
-      - fault
+    rights:
+      licence: OGL
+
+  - id: france_repairability
+    name: France Repairability Index
+    domain: repair_scores
+    description: "Government repair scores (0-10)"
+    why: "Declared vs observed repairability"
+    status: needs_parser
+    access:
+      type: html_parse
+      cadence: weekly
+    temporal:
+      recoverability: backfillable
+      snapshot_required: false
+
+  - id: eprel
+    name: EPREL
+    domain: energy_hardware
+    description: "EU energy efficiency + repair info"
+    why: "Appliance identification, spare parts, dismantling"
+    status: needs_api
+    access:
+      type: api
+      cadence: daily
+    temporal:
+      recoverability: backfillable
+      snapshot_required: false
+
+  # === PRIORITY 2: COMPONENT SUPPLY ===
+  - id: mouser
+    name: Mouser Electronics
+    domain: component_pricing
+    description: "Component pricing, stock, lead times"
+    why: "Parts scarcity signals, repair feasibility"
+    status: needs_api_key
+    access:
+      type: api
+      auth: api_key
+      cadence: daily
+    temporal:
+      recoverability: ephemeral
+      snapshot_required: true
+
+  - id: digikey
+    name: DigiKey
+    domain: component_pricing
+    description: "Component pricing + substitutions"
+    why: "Cross-validation, substitute discovery"
+    status: needs_api_key
+    access:
+      type: api
+      auth: api_key
+      cadence: daily
+
+  - id: nexar
+    name: Nexar/Octopart
+    domain: component_pricing
+    description: "Aggregated component data"
+    why: "Cross-distributor scarcity detection"
+    status: needs_api_key
+    access:
+      type: api
+      auth: api_key
+      cadence: daily
+
+  # === PRIORITY 3: REFERENCE DATA ===
+  - id: companies_house
+    name: Companies House
+    domain: businesses
+    description: "UK company data"
+    why: "Map repair businesses, track health"
+    status: operational
+    records: 210
+    access:
+      type: api
+      auth: api_key
+      cadence: daily
+
+  - id: planning_data
+    name: Planning Data
+    domain: demand
+    description: "UK planning applications"
+    why: "Demand signal for installations"
+    status: operational
+    records: 70
+    access:
+      type: api
+      cadence: daily
+
+  - id: octopus
+    name: Octopus Energy
+    domain: energy_prices
+    description: "Energy tariffs"
+    why: "Running cost calculations"
+    status: operational
+    records: 61
+    access:
+      type: api
+      cadence: daily
 
   - id: openalex
-    garden: repair
-    domain: research
     name: OpenAlex
+    domain: research
+    description: "Research papers"
+    why: "Knowledge frontier"
+    status: operational
+    records: 20
     access:
       type: api
       cadence: weekly
-    temporal:
-      recoverability: permanent
-      snapshot_required: false
-    produces:
-      - research_paper
