@@ -1,66 +1,55 @@
-# Layer 1 Source Manifest
-# Every repair data source must have a manifest in this format.
-# This is the contract between collectors and the garden.
+# Layer 1 Source Manifest — Open Repair Alliance
 
-# Identity
-id: open_repair                    # unique source ID
-name: Open Repair Alliance         # human name
-layer: 1                           # 1 = core data, 2 = analysis
-garden: repair                     # which garden this feeds
+id: open_repair
+name: Open Repair Alliance
+layer: 1
+garden: repair
 
-# What it produces (Layer 1 questions)
 answers:
-  - what_object?
-  - what_failed?
-  - what_component?
-  - what_intervention?
-  - what_cost?
-  - what_happened_afterwards?
-  - what_was_it_worth?
+  - what_object_category?
+  - what_brand?
+  - what_problem?
+  - was_repair_attempted?
+  - what_was_outcome?
+  - what_blocked_repair?
+  - how_old_was_object?
 
-# Source definition
 source:
   authority: Open Repair Alliance
   type: bulk_csv
   url: https://raw.githubusercontent.com/openrepair/data/master/aggregated/202507/OpenRepairData_v0.3_aggregate_202507.csv
   format: csv
 
-# Collection
 collection:
   cadence: weekly
   backfill_from: "2020-01-01"
   method: http_get
   parser: open_repair_csv_v1
 
-# Storage
 storage:
   raw: true
   append_only: true
   content_addressed: true
   schema: source_record
 
-# Time
 time:
   source_timestamp_field: event_date
   observed_at: true
   append_only: true
 
-# Health
 health:
   expected_min_rows: 100
-  max_staleness_hours: 168     # 1 week
+  max_staleness_hours: 168
   required_fields:
     - id
     - product_category
     - repair_status
 
-# Rights
 license:
   name: CC-BY-SA-4.0
   redistribution: allowed
   attribution: required
 
-# Export
 export:
   k1_format: true
   node_kind: repair_record

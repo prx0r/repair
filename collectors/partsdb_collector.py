@@ -54,10 +54,10 @@ class PartsDBCollector(BaseCollector):
         try:
             url = f'{self.API_BASE}/search?q={mpn}&limit=5'
             self._last_url = url
-            headers = {}
+            fetch_headers = {}
             if self.api_key:
-                headers['Authorization'] = f'Bearer {self.api_key}'
-            resp = self._fetch_url(url, timeout=15)
+                fetch_headers['Authorization'] = f'Bearer {self.api_key}'
+            resp = self._fetch_url(url, timeout=15, headers=fetch_headers)
             if resp and resp.status_code == 200:
                 self._last_status = resp.status_code
                 self._last_final_url = str(resp.url)

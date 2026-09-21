@@ -1,0 +1,51 @@
+# Layer 1 Source Manifest — eBay UK 3-Market
+
+id: ebay_3market
+name: eBay UK 3-Market
+layer: 1
+garden: repair
+
+answers:
+  - what_was_it_worth?
+  - what_object?
+
+source:
+  authority: eBay UK
+  type: html_scrape
+  url: https://www.ebay.co.uk
+  format: html
+
+collection:
+  cadence: 6h
+  backfill_from: null
+  method: http_get
+  parser: ebay_html_v1
+
+storage:
+  raw: true
+  append_only: true
+  content_addressed: true
+  schema: source_record
+
+time:
+  source_timestamp_field: null
+  observed_at: true
+  append_only: true
+
+health:
+  expected_min_rows: 50
+  max_staleness_hours: 8
+  required_fields:
+    - ebay_item_id
+    - title
+    - price
+    - condition
+
+license:
+  name: proprietary
+  redistribution: restricted
+
+export:
+  k1_format: true
+  node_kind: listing
+  observation_metric: price

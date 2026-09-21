@@ -12,12 +12,12 @@ import json
 import sqlite3
 import time
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 import sys
-from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from shared.db import get_db, DB_PATH
+from shared.db import get_db, get_db_path
 
 SOURCE_ID = 'open_repair'
 DATASET = 'open_repair_complete'
@@ -38,8 +38,8 @@ def fetch_raw():
     content = resp.content
     sha256 = hashlib.sha256(content).hexdigest()
 
-    # Store raw blob
-    raw_dir = Path('/home/ubuntu/repair/warehouse/raw') / SOURCE_ID
+    # Store raw blob using canonical path
+    raw_dir = get_db_path().parent / 'raw' / SOURCE_ID
     raw_dir.mkdir(parents=True, exist_ok=True)
     raw_path = raw_dir / f'{sha256}.csv.gz'
 
@@ -50,14 +50,14 @@ def fetch_raw():
     # Store acquisition receipt
     conn = get_db()
     conn.execute(
-        "INSERT INTO raw_blob (sha256, source_id, content_type, content_length, storage_path) "
+        "INSERT OR IGNORE INTO raw_blob (sha256, source_id, content_type, content_length, storage_path) "
         "VALUES (?, ?, ?, ?, ?)",
         (sha256, SOURCE_ID, 'text/csv', len(content), str(raw_path))
     )
     conn.execute(
         "INSERT INTO raw_acquisition (source_id, dataset, retrieved_at, request_url, http_status, "
         "content_type, content_length, sha256) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        (SOURCE_ID, DATASET, datetime.now().isoformat(), DATA_URL, 200,
+        (SOURCE_ID, DATASET, datetime.now(timezone.utc).isoformat(), DATA_URL, 200,
          'text/csv', len(content), sha256)
     )
     conn.commit()
@@ -117,7 +117,7 @@ def parse_and_store(raw_path, raw_sha256):
                     "retrieved_at, normalized_json, payload_hash, raw_payload_hash, "
                     "parser_id, parser_version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     (record_id, SOURCE_ID, DATASET, native_id,
-                     row.get('event_date', ''), datetime.now().isoformat(),
+                     row.get('event_date', ''), datetime.now(timezone.utc).isoformat(),
                      json.dumps(normalized, default=str), payload_hash,
                      raw_sha256, PARSER_ID, PARSER_VERSION)
                 )
@@ -133,7 +133,7 @@ def parse_and_store(raw_path, raw_sha256):
     conn.execute(
         "INSERT OR REPLACE INTO source_cursor (source_id, dataset, cursor_type, cursor_value, updated_at) "
         "VALUES (?, ?, 'row_count', ?, ?)",
-        (SOURCE_ID, DATASET, str(i + 1), datetime.now().isoformat())
+        (SOURCE_ID, DATASET, str(i + 1), datetime.now(timezone.utc).isoformat())
     )
     conn.commit()
     conn.close()

@@ -149,14 +149,13 @@ class Ebay3MarketCollector(BaseCollector):
         """Parse eBay items. Mutates result — does not return a new one."""
         items = json.loads(raw_content)
         for item in items:
-            # Stable identity: ebay_item_id + condition (no price in identity)
+            # Stable identity: ebay_item_id only (condition is an attribute, not identity)
             ebay_id = item.get('ebay_item_id', '')
             condition = item.get('condition', '')
-            native_id = f"ebay:{ebay_id}:{condition}" if ebay_id else ''
+            native_id = f"ebay:{ebay_id}" if ebay_id else ''
             if not native_id:
-                # Fallback: model + condition (still no price)
-                native_id = f"ebay:{item.get('model', '')}:{condition}"
-            if not native_id:
+                # Fallback: quarantine — don't silently collapse listings
+                native_id = f"ebay:unknown:{item.get('title', '')[:40]}"
                 result.records_invalid += 1
                 continue
 

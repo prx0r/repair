@@ -44,12 +44,14 @@ class BaseCollector:
         """
         raise NotImplementedError
 
-    def _fetch_url(self, url: str, max_retries: int = 3, timeout: int = 30) -> Optional[requests.Response]:
+    def _fetch_url(self, url: str, max_retries: int = 3, timeout: int = 30,
+                   headers: dict = None) -> Optional[requests.Response]:
+        merged = {'User-Agent': 'RepairGarden/1.0'}
+        if headers:
+            merged.update(headers)
         for attempt in range(max_retries):
             try:
-                resp = requests.get(url, timeout=timeout, headers={
-                    'User-Agent': 'RepairGarden/1.0',
-                })
+                resp = requests.get(url, timeout=timeout, headers=merged)
                 if resp.status_code in (200, 404, 403):
                     return resp
                 if resp.status_code == 429:

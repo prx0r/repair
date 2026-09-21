@@ -58,6 +58,13 @@ SOURCES = [
         'enabled': True,
     },
     {
+        'id': 'ebay_3market',
+        'module': 'collectors.ebay_3market_collector',
+        'class': 'Ebay3MarketCollector',
+        'cadence': 3600 * 6,   # every 6 hours
+        'enabled': True,
+    },
+    {
         'id': 'partsdb',
         'module': 'collectors.partsdb_collector',
         'class': 'PartsDBCollector',

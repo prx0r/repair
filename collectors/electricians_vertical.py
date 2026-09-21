@@ -17,12 +17,10 @@ Should return:
   - provenance for every number
 """
 
-import json
-import sqlite3
-from datetime import datetime
+import sys
 from pathlib import Path
-
-DB = Path('/home/ubuntu/warehouse/repair.db')
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from shared.db import get_db
 
 # Manchester test parameters
 TEST_GEO = "LAD:E08000003"
@@ -109,11 +107,11 @@ def run():
     print(f'Date: {TEST_DATE}')
     print('=' * 60)
 
-    if not DB.exists():
-        print(f'Database not found: {DB}')
+    from shared.db import get_db_path
+    if not get_db_path().exists():
+        print(f'Database not found: {get_db_path()}')
         return
-
-    conn = sqlite3.connect(str(DB))
+    conn = get_db()
     result = get_manchester_electricians(conn)
 
     # Print layers
