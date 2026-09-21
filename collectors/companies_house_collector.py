@@ -14,7 +14,7 @@ import sqlite3
 from datetime import datetime
 from pathlib import Path
 
-API_KEY = os.environ.get('COMPANIES_HOUSE_API_KEY', 'd284d51e-b98b-4517-861d-0f8b2273ceeb')
+API_KEY = os.environ.get('COMPANIES_HOUSE_API_KEY', '')
 API_BASE = 'https://api.company-information.service.gov.uk'
 DB_PATH = Path(__file__).parent.parent / 'warehouse' / 'repair.db'
 

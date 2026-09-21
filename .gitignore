@@ -6,10 +6,28 @@ __pycache__/
 *.egg-info/
 dist/
 build/
-.env
 venv/
 .venv/
+
+# Secrets — NEVER commit
+.env
+.env.*
+*.key
+*.pem
+*.p12
+
+# Data
 warehouse/normalized/
 warehouse/raw/
+warehouse/repair.db
+warehouse/*.db
 exports/
 data/resale/ebay_sold/
+data/resale/ebay_sold*/
+*.jsonl.gz
+
+# Generated
+*.log
+*.pid
+.DS_Store
+Thumbs.db
