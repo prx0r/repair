@@ -1,15 +1,13 @@
 """OpenAlex Research Collector — repair/sustainability/circular economy papers.
 
 Fetches latest research that maps the repair knowledge frontier.
+Layer 2: knowledge source, not core repair data.
 """
 
 import json
-import sqlite3
 import requests
-from datetime import datetime
-from pathlib import Path
-
-DB = Path(__file__).parent.parent / 'warehouse' / 'repair.db'
+from .base import BaseCollector, CollectorResult
+from shared.persist import insert_source_record
 
 QUERIES = [
     'electronics repair sustainability',
@@ -27,61 +25,68 @@ QUERIES = [
 ]
 
 
-def fetch_openalex(search_query, per_page=10):
-    """Fetch papers from OpenAlex."""
-    try:
-        resp = requests.get('https://api.openalex.org/works', params={
-            'search': search_query,
-            'per_page': per_page,
-            'sort': 'cited_by_count:desc',
-        }, timeout=15)
-        if resp.status_code == 200:
-            return resp.json().get('results', [])
-    except:
-        pass
-    return []
+class OpenAlexCollector(BaseCollector):
+    SOURCE_ID = 'openalex'
+    DATASET = 'research_papers'
+    PARSER_ID = 'openalex_api_v1'
 
+    def fetch(self):
+        """Fetch papers from OpenAlex for all queries."""
+        all_items = []
+        for query in QUERIES:
+            items = self._search_openalex(query)
+            all_items.extend(items)
+        return json.dumps(all_items).encode()
 
-def run():
-    print('OpenAlex Research Collector')
-    print(f'Queries: {len(QUERIES)}')
-    print('=' * 40)
+    def _search_openalex(self, query, per_page=10):
+        """Search OpenAlex for a query."""
+        try:
+            url = 'https://api.openalex.org/works'
+            self._last_url = url
+            resp = self._fetch_url(
+                f'{url}?search={query}&per_page={per_page}&sort=cited_by_count:desc',
+                timeout=15
+            )
+            if resp and resp.status_code == 200:
+                self._last_status = resp.status_code
+                self._last_final_url = str(resp.url)
+                self._last_content_type = resp.headers.get('content-type', '')
+                return resp.json().get('results', [])
+        except Exception as e:
+            print(f'    OpenAlex error for {query}: {e}')
+        return []
 
-    conn = sqlite3.connect(str(DB))
-    total = 0
+    def parse(self, raw_content, raw_hash, result):
+        """Parse OpenAlex papers. Mutates result."""
+        items = json.loads(raw_content)
+        for paper in items:
+            native_id = paper.get('id', '')
+            if not native_id:
+                result.records_invalid += 1
+                continue
 
-    for q in QUERIES:
-        print(f'  [{q}]...', end=' ')
-        papers = fetch_openalex(q, per_page=10)
-        count = 0
-        for p in papers:
-            topics = [t.get('display_name', '') for t in p.get('topics', [])[:5]]
-            store_obs(conn, 'openalex', p.get('id', ''), 'research_paper',
-                {'title': p.get('title'), 'cited_by': p.get('cited_by_count'),
-                 'year': p.get('publication_year'), 'topics': topics,
-                 'doi': p.get('doi'), 'query': q}, p)
-            count += 1
-        total += count
-        print(f'{count} papers')
-        conn.commit()
+            topics = [t.get('display_name', '') for t in paper.get('topics', [])[:5]]
+            normalized = {
+                'source_native_id': native_id,
+                'title': paper.get('title', ''),
+                'cited_by': paper.get('cited_by_count', 0),
+                'year': paper.get('publication_year'),
+                'topics': topics,
+                'doi': paper.get('doi', ''),
+            }
 
-    print(f'\nTotal: {total} papers')
-    conn.close()
-
-
-def store_obs(conn, source, entity, metric, value_dict, raw=None):
-    try:
-        conn.execute(
-            'INSERT OR IGNORE INTO observations '
-            '(source_id, entity_id, metric, value, value_type, raw_json, observed_at) '
-            'VALUES (?, ?, ?, ?, ?, ?, ?)',
-            (source, entity, metric, json.dumps(value_dict, default=str),
-             'json', json.dumps(raw or value_dict, default=str), datetime.now().isoformat())
-        )
-        return True
-    except:
-        return False
+            ir = insert_source_record(
+                self.SOURCE_ID, self.DATASET, native_id,
+                normalized, raw_hash, self.PARSER_ID, self.PARSER_VERSION
+            )
+            if ir.inserted:
+                if ir.duplicate_of:
+                    result.records_changed += 1
+                else:
+                    result.records_new += 1
+            else:
+                result.records_unchanged += 1
 
 
 if __name__ == '__main__':
-    run()
+    OpenAlexCollector().run()

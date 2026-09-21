@@ -7,8 +7,9 @@ import json
 import re
 import time
 import requests
+from datetime import datetime, timezone
 from .base import BaseCollector, CollectorResult
-from shared.persist import insert_source_record
+from shared.persist import insert_source_record, store_market_observation
 
 # Robot parts to track
 ROBOT_CATEGORIES = {
@@ -45,25 +46,35 @@ class RobotShopCollector(BaseCollector):
         """Search RobotShop UK."""
         try:
             url = f'https://uk.robotshop.com/search?q={query}'
+            self._last_url = url
             resp = self._fetch_url(url, timeout=15)
             if resp and resp.status_code == 200:
+                self._last_status = resp.status_code
+                self._last_final_url = str(resp.url)
+                self._last_content_type = resp.headers.get('content-type', '')
                 html = resp.text
-                # Extract product data from HTML
                 items = []
-                # RobotShop uses Shopify-style JSON-LD
                 json_ld = re.findall(r'<script type="application/ld\+json">(.*?)</script>', html, re.DOTALL)
                 for block in json_ld:
                     try:
                         data = json.loads(block)
                         if isinstance(data, dict) and data.get('@type') == 'Product':
                             offers = data.get('offers', {})
+                            # Extract SKU or product ID from URL or data
+                            sku = data.get('sku', '')
+                            product_id = data.get('productID', '')
+                            url_val = data.get('url', '')
+                            # Try to extract ID from URL: /products/slug-12345
+                            url_match = re.search(r'/products/.*?-(\d+)$', url_val) if url_val else None
                             items.append({
+                                'sku': sku or product_id or (url_match.group(1) if url_match else ''),
                                 'name': data.get('name', ''),
-                                'price': offers.get('price', 0),
+                                'price': offers.get('price', None),
                                 'currency': offers.get('priceCurrency', 'GBP'),
                                 'availability': offers.get('availability', ''),
                                 'brand': data.get('brand', {}).get('name', ''),
                                 'category': category,
+                                'url': url_val,
                             })
                     except:
                         pass
@@ -72,29 +83,50 @@ class RobotShopCollector(BaseCollector):
             print(f'    RobotShop error for {query}: {e}')
         return []
 
-    def parse(self, raw_content, raw_hash):
-        result = CollectorResult()
+    def parse(self, raw_content, raw_hash, result):
+        """Parse RobotShop items. Mutates result — does not return a new one."""
         items = json.loads(raw_content)
         for item in items:
-            native_id = f"{item.get('name', '')}_{item.get('price', 0)}"
+            # Stable identity: SKU or product ID (no price in identity)
+            native_id = item.get('sku', '') or item.get('name', '')
+            if not native_id:
+                result.records_invalid += 1
+                continue
+
             normalized = {
                 'source_native_id': native_id,
+                'sku': item.get('sku', ''),
                 'name': item.get('name', ''),
-                'price': item.get('price', 0),
+                'price': item.get('price'),
                 'currency': item.get('currency', 'GBP'),
                 'availability': item.get('availability', ''),
                 'brand': item.get('brand', ''),
                 'category': item.get('category', ''),
+                'url': item.get('url', ''),
             }
             ir = insert_source_record(
                 self.SOURCE_ID, self.DATASET, native_id,
                 normalized, raw_hash, self.PARSER_ID, self.PARSER_VERSION
             )
             if ir.inserted:
-                result.records_new += 1
+                if ir.duplicate_of:
+                    result.records_changed += 1
+                else:
+                    result.records_new += 1
             else:
                 result.records_unchanged += 1
-        return result
+
+            # Always store market observation
+            price = item.get('price')
+            if price is not None:
+                store_market_observation(
+                    source_record_id=ir.record_id,
+                    observed_at=datetime.now(timezone.utc).isoformat(),
+                    price=float(price),
+                    currency=item.get('currency', 'GBP'),
+                    availability=item.get('availability', ''),
+                    market='robotshop_uk',
+                )
 
 
 if __name__ == '__main__':

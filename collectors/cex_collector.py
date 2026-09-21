@@ -9,8 +9,9 @@ import json
 import re
 import time
 import requests
+from datetime import datetime, timezone
 from .base import BaseCollector, CollectorResult
-from shared.persist import insert_source_record
+from shared.persist import insert_source_record, store_market_observation
 
 # CeX categories to track
 CEX_CATEGORIES = {
@@ -38,7 +39,6 @@ class CexCollector(BaseCollector):
 
     def fetch(self):
         """CeX doesn't have a public API, so we scrape the search pages."""
-        # CeX search endpoint
         all_items = []
         for category, queries in CEX_CATEGORIES.items():
             for query in queries:
@@ -51,40 +51,60 @@ class CexCollector(BaseCollector):
         """Search CeX for a product."""
         try:
             url = f'https://wss2.cex.uk.webuy.io/v3/boxes?q={query}&firstRecord=1&count=10&sortBy=relevance&sortOrder=desc'
+            self._last_url = url
             resp = self._fetch_url(url, timeout=15)
             if resp and resp.status_code == 200:
+                self._last_status = resp.status_code
+                self._last_final_url = str(resp.url)
+                self._last_content_type = resp.headers.get('content-type', '')
                 data = resp.json()
                 items = data.get('response', {}).get('data', {}).get('boxes', [])
                 results = []
                 for item in items:
                     results.append({
+                        'box_id': item.get('boxId', ''),
+                        'category_id': item.get('categoryId', ''),
+                        'ean': item.get('ean', ''),
                         'name': item.get('boxName', ''),
-                        'sell_price': item.get('sellPrice', 0),
-                        'buy_price': item.get('buyPrice', 0),
-                        'exchange_price': item.get('exchangePrice', 0),
+                        'sell_price': item.get('sellPrice', None),
+                        'buy_price': item.get('buyPrice', None),
+                        'exchange_price': item.get('exchangePrice', None),
                         'category': category,
-                        'ceiling': item.get('ceilingPrice', 0),
+                        'ceiling': item.get('ceilingPrice', None),
                         'boxed': item.get('boxed', False),
+                        'grade': item.get('gradeName', ''),
                     })
                 return results
         except Exception as e:
             print(f'    CeX error for {query}: {e}')
         return []
 
-    def parse(self, raw_content, raw_hash):
-        result = CollectorResult()
+    def parse(self, raw_content, raw_hash, result):
+        """Parse CeX items. Mutates result — does not return a new one."""
         items = json.loads(raw_content)
         for item in items:
-            native_id = f"{item.get('name', '')}_{item.get('sell_price', 0)}"
+            # Stable identity: box_id is the CeX-native product identifier
+            native_id = str(item.get('box_id', ''))
+            if not native_id:
+                # Fallback: name only (no price in identity)
+                native_id = item.get('name', '')
+            if not native_id:
+                result.records_invalid += 1
+                continue
+
             normalized = {
                 'source_native_id': native_id,
+                'box_id': item.get('box_id', ''),
+                'category_id': item.get('category_id', ''),
+                'ean': item.get('ean', ''),
                 'name': item.get('name', ''),
-                'sell_price': item.get('sell_price', 0),
-                'buy_price': item.get('buy_price', 0),
-                'exchange_price': item.get('exchange_price', 0),
+                'sell_price': item.get('sell_price'),
+                'buy_price': item.get('buy_price'),
+                'exchange_price': item.get('exchange_price'),
                 'category': item.get('category', ''),
-                'ceiling_price': item.get('ceiling', 0),
+                'ceiling_price': item.get('ceiling'),
                 'boxed': item.get('boxed', False),
+                'grade': item.get('grade', ''),
                 'currency': 'GBP',
             }
             ir = insert_source_record(
@@ -92,10 +112,25 @@ class CexCollector(BaseCollector):
                 normalized, raw_hash, self.PARSER_ID, self.PARSER_VERSION
             )
             if ir.inserted:
-                result.records_new += 1
+                if ir.duplicate_of:
+                    result.records_changed += 1
+                else:
+                    result.records_new += 1
             else:
                 result.records_unchanged += 1
-        return result
+
+            # Always store market observation (even when unchanged)
+            sell_price = item.get('sell_price')
+            if sell_price is not None:
+                store_market_observation(
+                    source_record_id=ir.record_id,
+                    observed_at=datetime.now(timezone.utc).isoformat(),
+                    price=float(sell_price),
+                    currency='GBP',
+                    availability='in_stock' if sell_price else 'out_of_stock',
+                    condition=item.get('grade', ''),
+                    market='cex',
+                )
 
 
 if __name__ == '__main__':

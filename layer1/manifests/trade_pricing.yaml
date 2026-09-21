@@ -1,0 +1,51 @@
+# Layer 1 Source Manifest — Screwfix/Toolstation
+
+id: trade_pricing
+name: Screwfix/Toolstation
+layer: 1
+garden: repair
+
+answers:
+  - what_cost?
+  - what_component?
+
+source:
+  authority: Screwfix / Toolstation
+  type: web_scrape
+  url: https://www.screwfix.com / https://www.toolstation.com
+  format: html_jsonld
+
+collection:
+  cadence: 12h
+  backfill_from: null
+  method: http_get
+  parser: trade_web_v1
+
+storage:
+  raw: true
+  append_only: true
+  content_addressed: true
+  schema: source_record
+
+time:
+  source_timestamp_field: null
+  observed_at: true
+  append_only: true
+
+health:
+  expected_min_rows: 20
+  max_staleness_hours: 24
+  required_fields:
+    - product_code
+    - name
+    - price
+    - site
+
+license:
+  name: proprietary
+  redistribution: restricted
+
+export:
+  k1_format: true
+  node_kind: listing
+  observation_metric: price

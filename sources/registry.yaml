@@ -1,31 +1,26 @@
 # Repair Garden — Source Registry
 # Machine-readable source definitions
+# Only sources that feed the five native gardens:
+#   ASSET | FAILURE | PARTS | MARKET | OUTCOME
 
 sources:
-  # === PRIORITY 1: CORE REPAIR DATA ===
-  - id: open_repair
-    name: Open Repair Alliance
-    domain: repair_failure
-    description: "305K+ real repair attempts from EU repair cafés"
-    why: "Empirical fault/success/failure data — the foundation"
+  # === MARKET garden: ephemeral price tapes ===
+  - id: cex
+    name: CeX UK
+    domain: market_tape
+    description: "Buy/sell/exchange prices for used electronics"
+    why: "Dealer bid/ask spread, liquidity anchor, price revisions"
     status: operational
-    records: 305649
-    collector: collectors/open_repair_collector.py
+    collector: collectors/cex_collector.py
     access:
-      type: bulk_csv
-      url: https://raw.githubusercontent.com/openrepair/data/master/aggregated/202507/OpenRepairData_v0.3_aggregate_202507.csv
-      cadence: weekly
+      type: scrape
+      cadence: 6-hourly
     temporal:
-      recoverability: backfillable
-      snapshot_required: false
-    rights:
-      licence: CC-BY-SA-4.0
-      raw_storage: true
-      derivatives: true
-    produces:
-      - repair_record
-      - device
-      - fault
+      recoverability: ephemeral
+      snapshot_required: true
+    identity:
+      native_id: box_id (CeX product ID)
+      fields: [sell_price, buy_price, exchange_price, grade]
 
   - id: ebay_3market
     name: eBay UK 3-Market
@@ -33,57 +28,70 @@ sources:
     description: "Broken, working, and parts market prices"
     why: "Depreciation curves, repair spread, liquidity"
     status: blocked_vps
-    collector: collectors/ebay_collector.py
+    collector: collectors/ebay_3market_collector.py
     access:
       type: scrape
       cadence: 6-hourly
     temporal:
       recoverability: ephemeral
       snapshot_required: true
+    identity:
+      native_id: ebay_item_id + condition
+      fields: [price, condition, title]
 
-  - id: opss_recalls
-    name: UK OPSS Product Recalls
-    domain: safety
-    description: "Product safety recalls and alerts"
-    why: "Known defects, safety layer, failure precursors"
-    status: needs_parser
+  - id: trade_pricing
+    name: Screwfix/Toolstation
+    domain: market_tape
+    description: "UK trade pricing for repair-relevant goods"
+    why: "Installed cost of replacement parts, repair input costs"
+    status: operational
+    collector: collectors/trade_collector.py
     access:
-      type: html_parse
-      url: https://www.gov.uk/guidance/product-recalls-and-alerts
-      cadence: daily
+      type: scrape
+      cadence: 12-hourly
     temporal:
-      recoverability: backfillable
-      snapshot_required: false
-    rights:
-      licence: OGL
+      recoverability: ephemeral
+      snapshot_required: true
+    identity:
+      native_id: site:product_code
+      fields: [price, availability, brand]
 
-  - id: france_repairability
-    name: France Repairability Index
-    domain: repair_scores
-    description: "Government repair scores (0-10)"
-    why: "Declared vs observed repairability"
-    status: needs_parser
+  - id: robotshop_uk
+    name: RobotShop UK
+    domain: market_tape
+    description: "Robot component pricing"
+    why: "Future-facing repair branch, actuator/sensor costs"
+    status: operational
+    collector: collectors/robotshop_collector.py
     access:
-      type: html_parse
-      cadence: weekly
+      type: scrape
+      cadence: 12-hourly
     temporal:
-      recoverability: backfillable
-      snapshot_required: false
+      recoverability: ephemeral
+      snapshot_required: true
+    identity:
+      native_id: SKU or product URL ID
+      fields: [price, availability, brand]
 
-  - id: eprel
-    name: EPREL
-    domain: energy_hardware
-    description: "EU energy efficiency + repair info"
-    why: "Appliance identification, spare parts, dismantling"
-    status: needs_api
+  # === PARTS garden: component supply and pricing ===
+  - id: partsdb
+    name: PartsDB.io
+    domain: component_pricing
+    description: "European component pricing (100 req/day free)"
+    why: "Parts scarcity signals, repair feasibility"
+    status: needs_api_key
+    collector: collectors/partsdb_collector.py
     access:
       type: api
+      auth: api_key
       cadence: daily
     temporal:
-      recoverability: backfillable
-      snapshot_required: false
+      recoverability: ephemeral
+      snapshot_required: true
+    identity:
+      native_id: MPN (manufacturer part number)
+      fields: [price_eur, stock, lifecycle]
 
-  # === PRIORITY 2: COMPONENT SUPPLY ===
   - id: mouser
     name: Mouser Electronics
     domain: component_pricing
@@ -120,48 +128,70 @@ sources:
       auth: api_key
       cadence: daily
 
-  # === PRIORITY 3: REFERENCE DATA ===
-  - id: companies_house
-    name: Companies House
-    domain: businesses
-    description: "UK company data"
-    why: "Map repair businesses, track health"
+  # === FAILURE garden: faults, defects, recalls ===
+  - id: open_repair
+    name: Open Repair Alliance
+    domain: repair_failure
+    description: "305K+ real repair attempts from EU repair cafés"
+    why: "Empirical fault/success/failure data — the foundation"
     status: operational
-    records: 210
+    records: 305649
+    collector: collectors/open_repair_collector.py
     access:
-      type: api
-      auth: api_key
-      cadence: daily
-
-  - id: planning_data
-    name: Planning Data
-    domain: demand
-    description: "UK planning applications"
-    why: "Demand signal for installations"
-    status: operational
-    records: 70
-    access:
-      type: api
-      cadence: daily
-
-  - id: octopus
-    name: Octopus Energy
-    domain: energy_prices
-    description: "Energy tariffs"
-    why: "Running cost calculations"
-    status: operational
-    records: 61
-    access:
-      type: api
-      cadence: daily
-
-  - id: openalex
-    name: OpenAlex
-    domain: research
-    description: "Research papers"
-    why: "Knowledge frontier"
-    status: operational
-    records: 20
-    access:
-      type: api
+      type: bulk_csv
+      url: https://raw.githubusercontent.com/openrepair/data/master/aggregated/202507/OpenRepairData_v0.3_aggregate_202507.csv
       cadence: weekly
+    temporal:
+      recoverability: backfillable
+      snapshot_required: false
+    rights:
+      licence: CC-BY-SA-4.0
+      raw_storage: true
+      derivatives: true
+    produces:
+      - repair_record
+      - device
+      - fault
+
+  - id: opss_recalls
+    name: UK OPSS Product Recalls
+    domain: safety
+    description: "Product safety recalls and alerts"
+    why: "Known defects, safety layer, failure precursors"
+    status: operational
+    collector: collectors/opss_historical.py
+    access:
+      type: html_parse
+      url: https://www.gov.uk/guidance/product-recalls-and-alerts
+      cadence: daily
+    temporal:
+      recoverability: backfillable
+      snapshot_required: false
+    rights:
+      licence: OGL
+
+  - id: france_repairability
+    name: France Repairability Index
+    domain: repair_scores
+    description: "Government repair scores (0-10)"
+    why: "Declared vs observed repairability"
+    status: needs_parser
+    access:
+      type: html_parse
+      cadence: weekly
+    temporal:
+      recoverability: backfillable
+      snapshot_required: false
+
+  - id: eprel
+    name: EPREL
+    domain: energy_hardware
+    description: "EU energy efficiency + repair info"
+    why: "Appliance identification, spare parts, dismantling"
+    status: needs_api
+    access:
+      type: api
+      cadence: daily
+    temporal:
+      recoverability: backfillable
+      snapshot_required: false

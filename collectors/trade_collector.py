@@ -1,26 +1,28 @@
 """Screwfix/Toolstation Collector — UK trade pricing for power tools and electrical.
 
 These are the UK's primary trade suppliers. Prices here = real installed cost.
+Narrowed to repair-relevant goods: batteries, motors, switches, tools.
 """
 
 import json
 import re
 import time
 import requests
+from datetime import datetime, timezone
 from .base import BaseCollector, CollectorResult
-from shared.persist import insert_source_record
+from shared.persist import insert_source_record, store_market_observation
 
-# Trade product categories
+# Trade product categories — narrowed to repair-relevant
 TRADE_CATEGORIES = {
     'power_tools': ['makita drill', 'bosch drill', 'dewalt drill', 'milwaukee drill',
-                    'makita saw', 'angle grinder', 'circular saw', 'jigsaw'],
-    'electrical': ['consumer unit', 'rcbo', 'mcb', 'mcbo', 'contactor',
-                   'switch socket', 'light switch', 'junction box'],
-    'ev_charging': ['ev charger', 'tethered ev cable', 'untethered ev cable',
-                    'ev consumer unit', 'commando socket'],
-    'solar': ['solar panel', 'solar inverter', 'mppt controller',
-              'battery storage', 'solar cable'],
-    'heating': ['heat pump', 'oil radiator', 'electric heater', 'storage heater'],
+                    'angle grinder', 'circular saw', 'jigsaw'],
+    'batteries': ['makita battery', 'bosch battery', 'dewalt battery', 'milwaukee battery',
+                  '18v li-ion battery', 'power tool battery charger'],
+    'motors': ['universal motor', 'brush motor', 'replacement motor', 'fan motor'],
+    'electrical': ['rcbo', 'mcb', 'contactor', 'switch socket', 'light switch',
+                   'junction box', 'wago connector'],
+    'consumables': ['saw blade', 'grinding disc', 'drill bit set', 'solder',
+                    'heat shrink', 'cable tie', ' electrical tape'],
 }
 
 SITES = {
@@ -49,26 +51,35 @@ class ScrewfixToolstationCollector(BaseCollector):
         """Search a trade site."""
         try:
             search_url = f'{site_url}/search?search={query.replace(" ", "+")}'
+            self._last_url = search_url
             resp = self._fetch_url(search_url, timeout=15)
             if resp and resp.status_code == 200:
+                self._last_status = resp.status_code
+                self._last_final_url = str(resp.url)
+                self._last_content_type = resp.headers.get('content-type', '')
                 html = resp.text
                 items = []
-                # Extract JSON-LD product data
                 json_ld = re.findall(r'<script type="application/ld\+json">(.*?)</script>', html, re.DOTALL)
                 for block in json_ld:
                     try:
                         data = json.loads(block)
                         if isinstance(data, dict) and data.get('@type') == 'Product':
                             offers = data.get('offers', {})
+                            # Extract product code from URL or data
+                            url_val = data.get('url', '')
+                            # Screwfix URLs end with product code: /p/xxx_123
+                            code_match = re.search(r'/p/(\w+)', url_val) if url_val else None
+                            product_code = code_match.group(1) if code_match else ''
                             items.append({
+                                'product_code': product_code,
                                 'name': data.get('name', ''),
-                                'price': float(offers.get('price', 0)),
+                                'price': float(offers.get('price', 0)) if offers.get('price') else None,
                                 'currency': offers.get('priceCurrency', 'GBP'),
                                 'availability': offers.get('availability', ''),
                                 'brand': data.get('brand', {}).get('name', ''),
                                 'category': category,
                                 'site': site_name,
-                                'url': data.get('url', ''),
+                                'url': url_val,
                             })
                     except:
                         pass
@@ -77,20 +88,28 @@ class ScrewfixToolstationCollector(BaseCollector):
             print(f'    {site_name} error for {query}: {e}')
         return []
 
-    def parse(self, raw_content, raw_hash):
-        result = CollectorResult()
+    def parse(self, raw_content, raw_hash, result):
+        """Parse trade items. Mutates result — does not return a new one."""
         items = json.loads(raw_content)
         for item in items:
-            native_id = f"{item.get('site', '')}_{item.get('name', '')}_{item.get('price', 0)}"
+            # Stable identity: product_code + site (no price in identity)
+            product_code = item.get('product_code', '')
+            site = item.get('site', '')
+            native_id = f"{site}:{product_code}" if product_code else item.get('name', '')
+            if not native_id:
+                result.records_invalid += 1
+                continue
+
             normalized = {
                 'source_native_id': native_id,
+                'product_code': product_code,
                 'name': item.get('name', ''),
-                'price': item.get('price', 0),
+                'price': item.get('price'),
                 'currency': item.get('currency', 'GBP'),
                 'availability': item.get('availability', ''),
                 'brand': item.get('brand', ''),
                 'category': item.get('category', ''),
-                'site': item.get('site', ''),
+                'site': site,
                 'url': item.get('url', ''),
             }
             ir = insert_source_record(
@@ -98,10 +117,24 @@ class ScrewfixToolstationCollector(BaseCollector):
                 normalized, raw_hash, self.PARSER_ID, self.PARSER_VERSION
             )
             if ir.inserted:
-                result.records_new += 1
+                if ir.duplicate_of:
+                    result.records_changed += 1
+                else:
+                    result.records_new += 1
             else:
                 result.records_unchanged += 1
-        return result
+
+            # Always store market observation
+            price = item.get('price')
+            if price is not None:
+                store_market_observation(
+                    source_record_id=ir.record_id,
+                    observed_at=datetime.now(timezone.utc).isoformat(),
+                    price=price,
+                    currency=item.get('currency', 'GBP'),
+                    availability=item.get('availability', ''),
+                    market=site,
+                )
 
 
 if __name__ == '__main__':

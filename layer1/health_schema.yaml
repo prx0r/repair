@@ -1,0 +1,43 @@
+# Layer 1 Collector Health Schema
+# Every collector must emit this state after each run.
+# This is the operational contract for monitoring.
+
+# Collector identity
+collector_id: cex
+source_id: cex
+layer: 1
+
+# Run state
+last_attempt: "2026-09-21T18:00:00Z"
+last_success: "2026-09-21T12:00:00Z"
+last_error: null
+
+# Records
+records_seen: 180
+records_new: 12
+records_changed: 3
+records_unchanged: 165
+records_invalid: 0
+
+# Bytes
+bytes_fetched: 245760
+bytes_stored: 245760
+
+# Schema
+schema_hash: "a8f3c2e1"        # hash of the expected schema
+parser_id: cex_web_v1
+parser_version: "1.0.0"
+
+# Source health
+source_timestamp: "2026-09-21T17:55:00Z"
+source_timestamp_field: null    # CeX has no source timestamp
+staleness_hours: 0.08
+
+# Derived health
+status: ok                      # ok | degraded | error | blocked
+status_reason: null
+
+# Evidence
+raw_hash: "e3b0c44298fc..."
+acquisition_url: "https://wss2.cex.uk.webuy.io/v3/boxes?q=..."
+http_status: 200

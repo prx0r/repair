@@ -24,9 +24,8 @@ class OpenRepairCollector(BaseCollector):
             return resp.content
         return None
 
-    def parse(self, raw_content, raw_hash):
-        result = CollectorResult()
-
+    def parse(self, raw_content, raw_hash, result):
+        """Parse Open Repair CSV. Mutates result — does not return a new one."""
         try:
             content = gzip.decompress(raw_content).decode('utf-8', errors='replace')
         except:
@@ -67,8 +66,6 @@ class OpenRepairCollector(BaseCollector):
                     result.records_new += 1
             else:
                 result.records_unchanged += 1
-
-        return result
 
 
 if __name__ == '__main__':

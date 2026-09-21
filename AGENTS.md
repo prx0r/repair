@@ -1,22 +1,31 @@
-# Agents.md — Repair Garden (honest state)
+# Agents.md — Repair Garden
 
 ## What Actually Works
 
 | Component | Status | Evidence |
 |-----------|--------|----------|
-| Open Repair 305K records | ✅ | `SELECT COUNT(*) FROM source_record WHERE source_id='open_repair'` → 305,649 |
-| Derive pipeline | ✅ | 40 item types with repair success rates |
-| 8 passing tests | ✅ | `REPAIR_DB=/tmp/test.db python3 -m pytest tests/ -v` |
-| Shared persistence | ✅ | `insert_source_record()` returns InsertResult |
-| Idempotent raw storage | ✅ | Same content → same SHA256, one blob |
-| Marketplace collectors | 🔧 | Built but blocked on VPS (need non-VPS machine or Apify) |
+| Open Repair 305K records | ✅ | 305,649 source records with full provenance |
+| Shared persistence layer | ✅ | `shared/persist.py` — InsertResult, RawStoreResult, store_market_observation |
+| Canonical DB schema | ✅ | `shared/db.py` — 8 tables, sole authority |
+| BaseCollector runtime | ✅ | try/finally logging, parse(result) contract, 6 collectors |
+| 21 passing tests | ✅ | `REPAIR_DB=/tmp/test.db python3 -m pytest tests/ -v` |
+| k1 export | ✅ | 305K nodes, 233K edges, 305K evidence → k1 kernel |
+| Layer 1 manifests | ✅ | Standardized source manifests for all 6 sources |
+| Collector health | ✅ | `layer1/health.py` — CollectorHealth dataclass |
+| CeX collector | ⚠️ | Built, runs cleanly, 403 from VPS |
+| eBay 3-market | ⚠️ | Built, stable IDs, blocked on VPS |
+| Trade collector | ✅ | Screwfix/Toolstation, stable IDs |
+| RobotShop | ✅ | Stable IDs, JSON-LD extraction |
+| PartsDB | ⚠️ | Built, needs API key (free, instant) |
+| OpenAlex | ✅ | Migrated to BaseCollector |
+| Canonical chain | ✅ | Fixed to write derived_fact |
+| Daemon | ✅ | Fixed imports, 6 sources configured |
 
 ## What's Blocked (human action needed)
 
-1. **eBay**: Register Apify ($5/mo free), get APIFY_TOKEN
-2. **OPSS**: Download ODS from GOV.UK or use Apify actor
-3. **CeX**: Run from non-VPS machine
-4. **Components**: Register PartsDB.io (free, instant)
+1. **eBay**: Register Apify ($5/mo free), get APIFY_TOKEN — OR run from non-VPS machine
+2. **CeX**: 403 from VPS — needs non-VPS machine or residential proxy
+3. **PartsDB**: Register PartsDB.io (free, instant) — 100 req/day, no credit card
 
 ## How to Run
 
@@ -25,31 +34,50 @@
 REPAIR_DB=/tmp/test.db python3 -m pytest tests/ -v
 
 # Collect Open Repair
-python3 collectors/open_repair_collector.py
+python3 -c "from collectors.open_repair_collector import OpenRepairCollector; OpenRepairCollector().run()"
 
-# Check status
-python3 -m repair status
+# Collect CeX
+python3 -c "from collectors.cex_collector import CexCollector; CexCollector().run()"
 
-# Derive facts
-python3 normalize/derive_pipeline.py
+# Export to k1
+python3 export_k1.py
+
+# Run daemon (all sources on schedule)
+python3 daemon.py --loop --interval 3600
+
+# Check DB status
+python3 -m shared.db status
 ```
 
 ## Five Gardens
 
-1. ASSET — identity, composition, history
-2. FAILURE — symptoms, diagnosis, recalls
-3. PARTS — MPNs, substitutes, stock, price
-4. MARKET — broken/working/parts listing tape
-5. OUTCOME — intervention → result → survival
+1. **ASSET** — identity, composition, history
+2. **FAILURE** — symptoms, diagnosis, recalls (Open Repair, OPSS)
+3. **PARTS** — MPNs, substitutes, stock, price (PartsDB, Mouser, DigiKey)
+4. **MARKET** — broken/working/parts listing tape (CeX, eBay, Trade, RobotShop)
+5. **OUTCOME** — intervention → result → survival
+
+## Layer Structure
+
+```
+layer1/     Core data: what_object, what_failed, what_component,
+            what_intervention, what_cost, what_happened, what_worth
+
+layer2/     Analysis: economics, experiments, constraint pressure,
+            margin models, counterfactual scenarios
+```
 
 ## File Layout
 
 ```
-collectors/     — data collectors
-shared/         — persist.py, db.py, contracts.py
-domain/         — gardens.py (five gardens), capability.py, geography.py
-tests/          — 8 passing tests
-docs/           — reviews, architecture, sources
-sources/        — registry.yaml
-warehouse/      — SQLite (not in git)
+shared/           persist.py, db.py (single schema authority)
+collectors/       10 collectors (6 on BaseCollector, 3 legacy fixed, 1 deleted)
+domain/           gardens.py, capability.py, geography.py
+core/             data models, normalize pipeline
+layer1/           manifests, health schema, health tracker
+layer2/           experiments, powlab, pow_research
+tests/            21 passing tests
+docs/             5 reviews
+export_k1.py      bridge to k1 kernel
+warehouse/        SQLite (not in git)
 ```

@@ -1,0 +1,50 @@
+# Layer 1 Source Manifest — CeX UK
+
+id: cex
+name: CeX UK
+layer: 1
+garden: repair
+
+answers:
+  - what_was_it_worth?
+  - what_object?
+
+source:
+  authority: CeX
+  type: api_scrape
+  url: https://wss2.cex.uk.webuy.io/v3/boxes
+  format: json
+
+collection:
+  cadence: 6h
+  backfill_from: null
+  method: http_get
+  parser: cex_web_v1
+
+storage:
+  raw: true
+  append_only: true
+  content_addressed: true
+  schema: source_record
+
+time:
+  source_timestamp_field: null
+  observed_at: true
+  append_only: true
+
+health:
+  expected_min_rows: 50
+  max_staleness_hours: 8
+  required_fields:
+    - box_id
+    - name
+    - sell_price
+
+license:
+  name: proprietary
+  redistribution: restricted
+
+export:
+  k1_format: true
+  node_kind: listing
+  observation_metric: price

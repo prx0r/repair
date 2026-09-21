@@ -117,6 +117,21 @@ CREATE TABLE IF NOT EXISTS collector_run (
     duration_seconds REAL
 );
 
+-- Market observations (ephemeral time-series for marketplace tapes)
+CREATE TABLE IF NOT EXISTS market_observation (
+    observation_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    source_record_id TEXT NOT NULL,
+    observed_at TEXT NOT NULL,
+    price REAL,
+    currency TEXT DEFAULT 'GBP',
+    stock TEXT,
+    availability TEXT,
+    condition TEXT,
+    market TEXT,
+    extra_json TEXT,
+    FOREIGN KEY (source_record_id) REFERENCES source_record(source_record_id)
+);
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_source_record_source ON source_record(source_id);
 CREATE INDEX IF NOT EXISTS idx_source_record_native ON source_record(source_native_id);
@@ -125,6 +140,8 @@ CREATE INDEX IF NOT EXISTS idx_observation_entity ON observation(entity_id);
 CREATE INDEX IF NOT EXISTS idx_observation_metric ON observation(metric);
 CREATE INDEX IF NOT EXISTS idx_derived_entity ON derived_fact(entity_id);
 CREATE INDEX IF NOT EXISTS idx_raw_acq_source ON raw_acquisition(source_id);
+CREATE INDEX IF NOT EXISTS idx_market_obs_record ON market_observation(source_record_id);
+CREATE INDEX IF NOT EXISTS idx_market_obs_time ON market_observation(observed_at);
 """
 
 

@@ -20,18 +20,19 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from storage import init_db, start_collection_run, finish_collection_run, insert_observations_batch
+from shared.db import init_db
+from shared.persist import log_run
 
 BASE_DIR = Path(__file__).parent
 
 # Source configurations: name, script path, cadence_seconds, enabled
 SOURCES = [
     {
-        'id': 'ebay_uk',
-        'script': 'collectors/ebay_uk_collector.py',
+        'id': 'cex',
+        'script': 'collectors/cex_collector.py',
         'cadence': 3600 * 6,   # every 6 hours
         'enabled': True,
-        'args': ['--count', '50'],
+        'args': [],
     },
     {
         'id': 'open_repair',
@@ -41,52 +42,31 @@ SOURCES = [
         'args': [],
     },
     {
-        'id': 'france_repairability',
-        'script': 'collectors/france_repairability_collector.py',
-        'cadence': 3600 * 24 * 7,  # weekly
-        'enabled': True,
-        'args': [],
-    },
-    {
-        'id': 'eprel',
-        'script': 'collectors/eprel_collector.py',
-        'cadence': 3600 * 24,  # daily
-        'enabled': True,
-        'args': [],
-    },
-    {
-        'id': 'planning_data',
-        'script': 'collectors/planning_data_collector.py',
+        'id': 'robotshop_uk',
+        'script': 'collectors/robotshop_collector.py',
         'cadence': 3600 * 12,  # every 12 hours
         'enabled': True,
         'args': [],
     },
     {
-        'id': 'land_registry',
-        'script': 'collectors/land_registry_collector.py',
-        'cadence': 3600 * 24,  # daily
+        'id': 'trade_pricing',
+        'script': 'collectors/trade_collector.py',
+        'cadence': 3600 * 12,  # every 12 hours
         'enabled': True,
         'args': [],
     },
     {
-        'id': 'companies_house',
-        'script': 'collectors/companies_house_collector.py',
+        'id': 'partsdb',
+        'script': 'collectors/partsdb_collector.py',
         'cadence': 3600 * 24,  # daily
-        'enabled': bool(os.environ.get('COMPANIES_HOUSE_API_KEY')),
+        'enabled': bool(os.environ.get('PARTSDB_API_KEY')),
         'args': [],
     },
     {
-        'id': 'dvla',
-        'script': 'collectors/dvla_collector.py',
+        'id': 'opss_recalls',
+        'script': 'collectors/opss_historical.py',
         'cadence': 3600 * 24,  # daily
         'enabled': True,
-        'args': [],
-    },
-    {
-        'id': 'electricity_maps',
-        'script': 'collectors/electricity_maps_collector.py',
-        'cadence': 3600,  # hourly
-        'enabled': bool(os.environ.get('ELECTRICITY_MAPS_TOKEN')),
         'args': [],
     },
 ]
@@ -116,8 +96,8 @@ def run_collector(source):
         print(f"  [{source_id}] Script not found: {script}")
         return False
 
-    run_id = start_collection_run(source_id)
-    print(f"  [{source_id}] Starting collection run #{run_id}...")
+    started_at = datetime.now(timezone.utc).isoformat()
+    print(f"  [{source_id}] Starting collection...")
 
     try:
         result = subprocess.run(
@@ -128,33 +108,28 @@ def run_collector(source):
             cwd=str(BASE_DIR),
         )
 
-        if result.returncode == 0:
-            # Try to count rows from output
-            rows = 0
-            for line in result.stdout.split('\n'):
-                if 'items' in line or 'products' in line or 'companies' in line:
-                    parts = line.strip().split()
-                    for p in parts:
-                        try:
-                            rows = int(p)
-                        except ValueError:
-                            continue
+        finished_at = datetime.now(timezone.utc).isoformat()
 
-            finish_collection_run(run_id, rows_collected=rows, rows_inserted=rows, status='ok')
-            print(f"  [{source_id}] OK ({rows} rows)")
+        if result.returncode == 0:
+            log_run(source_id, 'ok', started_at=started_at, finished_at=finished_at)
+            print(f"  [{source_id}] OK")
             return True
         else:
             error = result.stderr[:500] if result.stderr else 'unknown error'
-            finish_collection_run(run_id, status='error', error=error)
+            log_run(source_id, 'error', error=error, started_at=started_at, finished_at=finished_at)
             print(f"  [{source_id}] ERROR: {error[:100]}")
             return False
 
     except subprocess.TimeoutExpired:
-        finish_collection_run(run_id, status='timeout', error='timeout after 600s')
+        finished_at = datetime.now(timezone.utc).isoformat()
+        log_run(source_id, 'error', error='timeout after 600s',
+                started_at=started_at, finished_at=finished_at)
         print(f"  [{source_id}] TIMEOUT")
         return False
     except Exception as e:
-        finish_collection_run(run_id, status='error', error=str(e)[:500])
+        finished_at = datetime.now(timezone.utc).isoformat()
+        log_run(source_id, 'error', error=str(e)[:500],
+                started_at=started_at, finished_at=finished_at)
         print(f"  [{source_id}] EXCEPTION: {e}")
         return False
 
@@ -207,7 +182,6 @@ def loop(interval=3600):
         if not RUNNING:
             break
         print(f"\n  Next cycle in {interval}s...")
-        # Sleep in small increments so we can respond to signals
         for _ in range(interval):
             if not RUNNING:
                 break

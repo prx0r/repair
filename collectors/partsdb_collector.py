@@ -4,11 +4,12 @@ European electronics distributor data with pricing.
 """
 
 import json
+import os
 import time
 from .base import BaseCollector, CollectorResult
 from shared.persist import insert_source_record
 
-# MPN cohort to track
+# MPN cohort to track — repair-derived (commonly failed components)
 MPN_COHORT = [
     'STM32F407VGT6', 'STM32F103C8T6', 'ATmega328P',
     'ESP32-WROOM-32', 'ESP32-S3-WROOM-1',
@@ -49,22 +50,24 @@ class PartsDBCollector(BaseCollector):
     def _search_mpn(self, mpn):
         """Search for a specific MPN."""
         try:
-            resp = self._fetch_url(
-                f'{self.API_BASE}/search?q={mpn}&limit=5',
-                timeout=15
-            )
+            url = f'{self.API_BASE}/search?q={mpn}&limit=5'
+            self._last_url = url
+            resp = self._fetch_url(url, timeout=15)
             if resp and resp.status_code == 200:
+                self._last_status = resp.status_code
+                self._last_final_url = str(resp.url)
+                self._last_content_type = resp.headers.get('content-type', '')
                 data = resp.json()
                 return data.get('results', [])
         except Exception as e:
             print(f'    PartsDB error for {mpn}: {e}')
         return []
 
-    def parse(self, raw_content, raw_hash):
-        result = CollectorResult()
+    def parse(self, raw_content, raw_hash, result):
+        """Parse PartsDB items. Mutates result — does not return a new one."""
         items = json.loads(raw_content)
         for item in items:
-            native_id = item.get('mpn', item.get('id', ''))
+            native_id = item.get('mpn', '') or item.get('id', '')
             if not native_id:
                 result.records_invalid += 1
                 continue
@@ -73,8 +76,8 @@ class PartsDBCollector(BaseCollector):
                 'mpn': item.get('mpn', ''),
                 'manufacturer': item.get('manufacturer', ''),
                 'description': item.get('description', ''),
-                'price_eur': item.get('price', 0),
-                'stock': item.get('stock', 0),
+                'price_eur': item.get('price'),  # None, not 0
+                'stock': item.get('stock'),  # None, not 0
                 'lifecycle': item.get('lifecycle', ''),
                 'category': item.get('category', ''),
             }
@@ -83,13 +86,12 @@ class PartsDBCollector(BaseCollector):
                 normalized, raw_hash, self.PARSER_ID, self.PARSER_VERSION
             )
             if ir.inserted:
-                result.records_new += 1
+                if ir.duplicate_of:
+                    result.records_changed += 1
+                else:
+                    result.records_new += 1
             else:
                 result.records_unchanged += 1
-        return result
-
-
-import os  # needed for env vars
 
 
 if __name__ == '__main__':

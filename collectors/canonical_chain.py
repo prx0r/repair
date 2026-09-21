@@ -1,42 +1,49 @@
 """Canonical Chain — builds the DEVICE→FAULT→PART→VALUE graph from collected data.
 
-Reads from SQLite observations and produces derived facts:
+Reads from source_record and produces derived facts in the derived_fact table.
+Layer 2: analysis pipeline, consumes Layer 1 data.
+
 - device_value_curves: price by condition over time
 - repair_opportunities: broken→repaired spread
-- part_scarcity_signals: MPN availability across distributors
 """
 
 import json
+import hashlib
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
-DB = Path(__file__).parent.parent / 'warehouse' / 'repair.db'
+from shared.persist import get_db
 
 
 def compute_value_curves(conn):
-    """Compute price distributions by device × condition from eBay data."""
+    """Compute price distributions by device × condition from market data."""
     rows = conn.execute("""
-        SELECT entity_id, value FROM observations
-        WHERE source_id = 'ebay_3market' AND metric = 'listing'
+        SELECT source_native_id, normalized_json FROM source_record
+        WHERE source_id = 'ebay_3market' AND valid = 1
     """).fetchall()
 
     devices = {}
-    for row in rows:
-        data = json.loads(row[1])
-        domain = data.get('domain', 'unknown')
-        search = data.get('search', 'unknown')
-        condition = data.get('condition', 'working')
-        price = data.get('price', 0)
+    for native_id, normalized_json in rows:
+        try:
+            data = json.loads(normalized_json)
+        except:
+            continue
 
-        key = f"{domain}:{search}"
+        domain = data.get('domain', 'unknown')
+        model = data.get('model', 'unknown')
+        condition = data.get('condition', 'working')
+        price = data.get('price')
+        if price is None:
+            continue
+
+        key = f"{domain}:{model}"
         if key not in devices:
             devices[key] = {'broken': [], 'working': [], 'parts': []}
 
         if condition in devices[key]:
-            devices[key][condition].append(price)
+            devices[key][condition].append(float(price))
 
-    # Store derived value curves
     count = 0
     for device_key, prices in devices.items():
         curve = {}
@@ -53,20 +60,23 @@ def compute_value_curves(conn):
                     'p90': price_list[min(n - 1, n * 9 // 10)],
                 }
 
-        # Calculate repair spread if we have broken + working
         if curve.get('broken', {}).get('count', 0) > 0 and curve.get('working', {}).get('count', 0) > 0:
             broken_med = curve['broken']['median']
             working_med = curve['working']['median']
             curve['repair_spread'] = working_med - broken_med
             curve['repair_spread_pct'] = ((working_med - broken_med) / broken_med * 100) if broken_med > 0 else 0
 
+        derived_id = hashlib.sha256(
+            json.dumps({"kind": "value_curve", "subject": device_key}, sort_keys=True).encode()
+        ).hexdigest()
+
         conn.execute(
-            'INSERT OR REPLACE INTO observations '
-            '(source_id, entity_id, metric, value, value_type, raw_json, observed_at) '
-            'VALUES (?, ?, ?, ?, ?, ?, ?)',
-            ('canonical_chain', device_key, 'value_curve',
-             json.dumps(curve, default=str), 'json',
-             json.dumps(curve, default=str), datetime.now().isoformat())
+            "INSERT OR REPLACE INTO derived_fact "
+            "(derived_id, source_id, entity_id, metric, value, method_id, method_version, "
+            "input_observation_ids, computed_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (derived_id, 'canonical_chain', device_key, 'value_curve',
+             json.dumps(curve, default=str), 'value_curve', 'v1',
+             '[]', datetime.now(timezone.utc).isoformat())
         )
         count += 1
 
@@ -77,23 +87,26 @@ def compute_value_curves(conn):
 def compute_repair_opportunities(conn):
     """Find devices with profitable repair spread."""
     rows = conn.execute("""
-        SELECT entity_id, value FROM observations
-        WHERE source_id = 'canonical_chain' AND metric = 'value_curve'
+        SELECT entity_id, value FROM derived_fact
+        WHERE metric = 'value_curve'
     """).fetchall()
 
     count = 0
-    for row in rows:
-        data = json.loads(row[1])
+    for device_key, value_json in rows:
+        try:
+            data = json.loads(value_json)
+        except:
+            continue
+
         if 'repair_spread' not in data:
             continue
 
-        device = row[0]
         spread = data['repair_spread']
         broken_med = data.get('broken', {}).get('median', 0)
         working_med = data.get('working', {}).get('median', 0)
 
         opportunity = {
-            'device': device,
+            'device': device_key,
             'broken_cost': broken_med,
             'working_value': working_med,
             'gross_spread': spread,
@@ -102,13 +115,17 @@ def compute_repair_opportunities(conn):
             'working_count': data.get('working', {}).get('count', 0),
         }
 
+        derived_id = hashlib.sha256(
+            json.dumps({"kind": "repair_opportunity", "subject": device_key}, sort_keys=True).encode()
+        ).hexdigest()
+
         conn.execute(
-            'INSERT OR REPLACE INTO observations '
-            '(source_id, entity_id, metric, value, value_type, raw_json, observed_at) '
-            'VALUES (?, ?, ?, ?, ?, ?, ?)',
-            ('canonical_chain', device, 'repair_opportunity',
-             json.dumps(opportunity, default=str), 'json',
-             json.dumps(opportunity, default=str), datetime.now().isoformat())
+            "INSERT OR REPLACE INTO derived_fact "
+            "(derived_id, source_id, entity_id, metric, value, method_id, method_version, "
+            "input_observation_ids, computed_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (derived_id, 'canonical_chain', device_key, 'repair_opportunity',
+             json.dumps(opportunity, default=str), 'repair_opportunity', 'v1',
+             '[]', datetime.now(timezone.utc).isoformat())
         )
         count += 1
 
@@ -120,7 +137,7 @@ def run():
     print('Canonical Chain Builder')
     print('=' * 40)
 
-    conn = sqlite3.connect(str(DB))
+    conn = get_db()
 
     print('  Computing value curves...')
     n_curves = compute_value_curves(conn)
@@ -130,16 +147,18 @@ def run():
     n_opps = compute_repair_opportunities(conn)
     print(f'    {n_opps} repair opportunities found')
 
-    # Show top opportunities
     print('\n  Top repair opportunities:')
     rows = conn.execute("""
-        SELECT entity_id, value FROM observations
-        WHERE source_id = 'canonical_chain' AND metric = 'repair_opportunity'
-        ORDER BY CAST(value AS REAL) DESC LIMIT 10
+        SELECT entity_id, value FROM derived_fact
+        WHERE metric = 'repair_opportunity'
+        ORDER BY computed_at DESC LIMIT 10
     """).fetchall()
 
-    for row in rows:
-        data = json.loads(row[1])
+    for device_key, value_json in rows:
+        try:
+            data = json.loads(value_json)
+        except:
+            continue
         spread = data.get('gross_spread', 0)
         pct = data.get('spread_pct', 0)
         print(f'    {data.get("device", "?"):40s}  £{spread:>8.2f}  ({pct:>6.1f}%)')
