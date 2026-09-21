@@ -7,7 +7,7 @@ All writes are append-only. Observations are immutable.
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path('/home/ubuntu/warehouse/repair.db')
+DB_PATH = Path(__file__).parent.parent / 'warehouse' / 'repair.db'
 
 SCHEMA = """
 -- Layer A: RAW blobs (content-addressed)
