@@ -1,0 +1,19 @@
+[project]
+name = "repair"
+version = "0.1.0"
+description = "Repair Garden — electronics, robot parts, solar, crypto mining hardware"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.31",
+    "flask>=3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.1",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100

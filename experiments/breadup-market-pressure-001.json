@@ -1,0 +1,33 @@
+{
+  "experiment_id": "breadup-market-pressure-001",
+  "forest": "breadup",
+  "tree": "used_market_pressure",
+  "audience": "resellers, music producers, side-hustlers",
+  "title": "The used music gear getting cheaper fastest right now",
+  "title_hypothesis": "People want arbitrage opportunities. Price drops in music gear are actionable for flippers and producers looking for deals.",
+  "answer_metric": "price_direction_30d",
+  "answer_value": -1,
+  "confidence": 0.7,
+  "evidence": [
+    "Roland SP-404MKII supply increasing on eBay UK",
+    "Korg Minilogue listings up 15% this month",
+    "Multiple synths showing price cuts across categories"
+  ],
+  "video_id": "/home/box/datagarden/content/shorts/short_20260919_050535.mp4",
+  "published_at": null,
+  "platform": "youtube_shorts",
+  "impressions": null,
+  "ctr": null,
+  "views": null,
+  "avg_view_duration": null,
+  "avg_view_percentage": null,
+  "likes": null,
+  "comments": null,
+  "shares": null,
+  "subs_gained": null,
+  "decision": null,
+  "next_hypothesis": null,
+  "created_at": "2026-09-19T05:05:35.375922",
+  "data_source": "ebay_uk_browse",
+  "data_collected_at": "2026-09-19T05:05:35.375865"
+}

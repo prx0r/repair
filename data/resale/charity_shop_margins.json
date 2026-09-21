@@ -1,0 +1,50 @@
+[
+  {
+    "brand": "Barbour",
+    "buy_price_gbp": 14,
+    "sell_price_gbp": 87,
+    "margin_pct": 521,
+    "days_to_sell": 14,
+    "platform": "vinted"
+  },
+  {
+    "brand": "North Face",
+    "buy_price_gbp": 10,
+    "sell_price_gbp": 57,
+    "margin_pct": 470,
+    "days_to_sell": 10,
+    "platform": "vinted"
+  },
+  {
+    "brand": "Patagonia",
+    "buy_price_gbp": 10,
+    "sell_price_gbp": 65,
+    "margin_pct": 550,
+    "days_to_sell": 12,
+    "platform": "vinted"
+  },
+  {
+    "brand": "Ralph Lauren",
+    "buy_price_gbp": 5,
+    "sell_price_gbp": 26,
+    "margin_pct": 420,
+    "days_to_sell": 9,
+    "platform": "vinted"
+  },
+  {
+    "brand": "Tommy Hilfiger",
+    "buy_price_gbp": 5,
+    "sell_price_gbp": 22,
+    "margin_pct": 340,
+    "days_to_sell": 11,
+    "platform": "vinted"
+  },
+  {
+    "brand": "Fred Perry",
+    "buy_price_gbp": 7,
+    "sell_price_gbp": 30,
+    "margin_pct": 329,
+    "days_to_sell": 13,
+    "platform": "vinted"
+  }
+]
