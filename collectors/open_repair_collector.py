@@ -19,9 +19,9 @@ class OpenRepairCollector(BaseCollector):
     DATA_URL = 'https://raw.githubusercontent.com/openrepair/data/master/aggregated/202507/OpenRepairData_v0.3_aggregate_202507.csv'
 
     def fetch(self):
-        resp = self._fetch_url(self.DATA_URL, timeout=120)
-        if resp and resp.status_code == 200:
-            return resp.content
+        acq = self._fetch_url(self.DATA_URL, timeout=120)
+        if acq and acq.status == 200:
+            return acq.content
         return None
 
     def parse(self, raw_content, raw_hash, result):

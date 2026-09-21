@@ -51,13 +51,9 @@ class ScrewfixToolstationCollector(BaseCollector):
         """Search a trade site."""
         try:
             search_url = f'{site_url}/search?search={query.replace(" ", "+")}'
-            self._last_url = search_url
-            resp = self._fetch_url(search_url, timeout=15)
-            if resp and resp.status_code == 200:
-                self._last_status = resp.status_code
-                self._last_final_url = str(resp.url)
-                self._last_content_type = resp.headers.get('content-type', '')
-                html = resp.text
+            acq = self._fetch_url(search_url, timeout=15)
+            if acq and acq.status == 200:
+                html = acq.content.decode('utf-8', errors='replace')
                 items = []
                 json_ld = re.findall(r'<script type="application/ld\+json">(.*?)</script>', html, re.DOTALL)
                 for block in json_ld:

@@ -1,7 +1,8 @@
 """Collector Base — hardened base class for all collectors.
 
 Uses shared/persist.py for all database operations.
-Returns proper counts. No hand-written SQL.
+Every HTTP response is stored as a separate raw blob (per-acquisition).
+Collectors own their collector_run records.
 """
 
 import json
@@ -11,7 +12,8 @@ from datetime import datetime, timezone
 from typing import Optional
 from shared.persist import (
     get_db, store_raw, store_acquisition, insert_source_record,
-    get_cursor, set_cursor, log_run, InsertResult, RawStoreResult, Acquisition
+    get_cursor, set_cursor, log_run, persist_health,
+    InsertResult, RawStoreResult, Acquisition
 )
 
 
@@ -26,6 +28,7 @@ class CollectorResult:
         self.errors = []
         self.started_at = datetime.now(timezone.utc).isoformat()
         self.finished_at = None
+        self.acquisitions = []  # list of Acquisition objects from this run
 
 
 class BaseCollector:
@@ -35,6 +38,11 @@ class BaseCollector:
     PARSER_VERSION = '1.0.0'
 
     def fetch(self) -> Optional[bytes]:
+        """Fetch raw data. Override in subclasses.
+
+        For multi-request collectors, return aggregated bytes.
+        Individual acquisitions are tracked via _fetch_url().
+        """
         raise NotImplementedError
 
     def parse(self, raw_content: bytes, raw_hash: str, result: CollectorResult):
@@ -45,21 +53,64 @@ class BaseCollector:
         raise NotImplementedError
 
     def _fetch_url(self, url: str, max_retries: int = 3, timeout: int = 30,
-                   headers: dict = None) -> Optional[requests.Response]:
+                   headers: dict = None) -> Optional[Acquisition]:
+        """Fetch a URL. Stores each response as its own raw blob + raw_acquisition.
+
+        Returns Acquisition object with content, URL, status, hash.
+        Returns None on failure after retries.
+        """
         merged = {'User-Agent': 'RepairGarden/1.0'}
         if headers:
             merged.update(headers)
+
         for attempt in range(max_retries):
             try:
                 resp = requests.get(url, timeout=timeout, headers=merged)
+
                 if resp.status_code in (200, 404, 403):
-                    return resp
+                    # Store the raw response as its own blob
+                    content = resp.content
+                    raw_result = store_raw(content, self.SOURCE_ID)
+
+                    # Store acquisition receipt
+                    acq = Acquisition(
+                        content=content,
+                        requested_url=url,
+                        final_url=str(resp.url),
+                        status=resp.status_code,
+                        content_type=resp.headers.get('content-type', ''),
+                        etag=resp.headers.get('etag', ''),
+                        last_modified=resp.headers.get('last-modified', ''),
+                        content_length=len(content),
+                    )
+
+                    # Persist the acquisition
+                    conn = get_db()
+                    cursor = conn.execute(
+                        "INSERT INTO raw_acquisition "
+                        "(source_id, dataset, retrieved_at, request_url, final_url, "
+                        "http_status, etag, last_modified, content_type, content_length, sha256) "
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        (self.SOURCE_ID, self.DATASET,
+                         datetime.now(timezone.utc).isoformat(),
+                         url, acq.final_url, acq.status, acq.etag, acq.last_modified,
+                         acq.content_type, acq.content_length, raw_result.sha256)
+                    )
+                    acquisition_id = cursor.lastrowid
+                    conn.commit()
+                    conn.close()
+
+                    acq.sha256 = raw_result.sha256
+                    acq.acquisition_id = acquisition_id
+                    return acq
+
                 if resp.status_code == 429:
                     time.sleep(min(60, 2 ** (attempt + 2)))
                 else:
                     time.sleep(2 ** attempt)
             except Exception:
                 time.sleep(2 ** attempt)
+
         return None
 
     def run(self) -> CollectorResult:
@@ -81,14 +132,13 @@ class BaseCollector:
             raw_hash = raw_result.sha256
             result.raw_new = 1 if raw_result.inserted else 0
 
+            # Store the batch acquisition
             store_acquisition(
                 self.SOURCE_ID, self.DATASET,
-                url=getattr(self, '_last_url', self.SOURCE_ID),
-                http_status=getattr(self, '_last_status', 200),
+                url=f'{self.SOURCE_ID}://batch',
+                http_status=200,
                 sha256=raw_hash,
-                content_type=getattr(self, '_last_content_type', ''),
                 content_length=len(raw_content),
-                final_url=getattr(self, '_last_final_url', ''),
             )
             print(f'  Raw: {raw_hash[:12]}... ({len(raw_content):,} bytes)')
 
@@ -111,4 +161,8 @@ class BaseCollector:
                 json.dumps(result.errors) if result.errors else None,
                 result.started_at, result.finished_at,
             )
+            # Persist health for monitoring
+            from layer1.health import health_from_run_result
+            health = health_from_run_result(self.SOURCE_ID, self.SOURCE_ID, result)
+            persist_health(self.SOURCE_ID, health.to_dict())
         return result

@@ -153,6 +153,23 @@ CREATE TABLE IF NOT EXISTS market_observation (
     FOREIGN KEY (collector_run_id) REFERENCES collector_run(run_id)
 );
 
+-- Collector health (persisted after every run)
+CREATE TABLE IF NOT EXISTS source_health (
+    health_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    source_id TEXT NOT NULL,
+    last_attempt TEXT,
+    last_success TEXT,
+    last_error TEXT,
+    records_seen INTEGER DEFAULT 0,
+    records_new INTEGER DEFAULT 0,
+    records_changed INTEGER DEFAULT 0,
+    records_unchanged INTEGER DEFAULT 0,
+    records_invalid INTEGER DEFAULT 0,
+    status TEXT DEFAULT 'unknown',
+    status_reason TEXT,
+    computed_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_source_record_source ON source_record(source_id);
 CREATE INDEX IF NOT EXISTS idx_source_record_native ON source_record(source_native_id);

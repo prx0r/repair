@@ -41,17 +41,10 @@ class OpenAlexCollector(BaseCollector):
     def _search_openalex(self, query, per_page=10):
         """Search OpenAlex for a query."""
         try:
-            url = 'https://api.openalex.org/works'
-            self._last_url = url
-            resp = self._fetch_url(
-                f'{url}?search={query}&per_page={per_page}&sort=cited_by_count:desc',
-                timeout=15
-            )
-            if resp and resp.status_code == 200:
-                self._last_status = resp.status_code
-                self._last_final_url = str(resp.url)
-                self._last_content_type = resp.headers.get('content-type', '')
-                return resp.json().get('results', [])
+            url = f'https://api.openalex.org/works?search={query}&per_page={per_page}&sort=cited_by_count:desc'
+            acq = self._fetch_url(url, timeout=15)
+            if acq and acq.status == 200:
+                return json.loads(acq.content).get('results', [])
         except Exception as e:
             print(f'    OpenAlex error for {query}: {e}')
         return []

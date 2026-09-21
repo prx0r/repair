@@ -53,16 +53,12 @@ class PartsDBCollector(BaseCollector):
         """Search for a specific MPN."""
         try:
             url = f'{self.API_BASE}/search?q={mpn}&limit=5'
-            self._last_url = url
             fetch_headers = {}
             if self.api_key:
                 fetch_headers['Authorization'] = f'Bearer {self.api_key}'
-            resp = self._fetch_url(url, timeout=15, headers=fetch_headers)
-            if resp and resp.status_code == 200:
-                self._last_status = resp.status_code
-                self._last_final_url = str(resp.url)
-                self._last_content_type = resp.headers.get('content-type', '')
-                data = resp.json()
+            acq = self._fetch_url(url, timeout=15, headers=fetch_headers)
+            if acq and acq.status == 200:
+                data = json.loads(acq.content)
                 return data.get('results', [])
         except Exception as e:
             print(f'    PartsDB error for {mpn}: {e}')

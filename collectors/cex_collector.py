@@ -51,13 +51,9 @@ class CexCollector(BaseCollector):
         """Search CeX for a product."""
         try:
             url = f'https://wss2.cex.uk.webuy.io/v3/boxes?q={query}&firstRecord=1&count=10&sortBy=relevance&sortOrder=desc'
-            self._last_url = url
-            resp = self._fetch_url(url, timeout=15)
-            if resp and resp.status_code == 200:
-                self._last_status = resp.status_code
-                self._last_final_url = str(resp.url)
-                self._last_content_type = resp.headers.get('content-type', '')
-                data = resp.json()
+            acq = self._fetch_url(url, timeout=15)
+            if acq and acq.status == 200:
+                data = json.loads(acq.content)
                 items = data.get('response', {}).get('data', {}).get('boxes', [])
                 results = []
                 for item in items:

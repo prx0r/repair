@@ -242,9 +242,38 @@ def store_market_observation(source_record_id: str, observed_at: str,
         "observation_type, observed_at, price, bid_price, exchange_price, currency, "
         "stock, availability, condition, market, extra_json) "
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        (source_record_id, acquisition_id, collector_run_id, source_native_id,
+         (source_record_id, acquisition_id, collector_run_id, source_native_id,
          observation_type, observed_at, price, bid_price, exchange_price, currency,
          stock, availability, condition, market, extra_json)
+    )
+    conn.commit()
+    conn.close()
+
+
+def persist_health(source_id: str, health: dict):
+    """Persist collector health state after every run.
+
+    health dict should match CollectorHealth.to_dict() output.
+    """
+    conn = get_db()
+    conn.execute(
+        "INSERT INTO source_health "
+        "(source_id, last_attempt, last_success, last_error, "
+        "records_seen, records_new, records_changed, records_unchanged, records_invalid, "
+        "status, status_reason, computed_at) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (source_id,
+         health.get('last_attempt', ''),
+         health.get('last_success', ''),
+         health.get('last_error'),
+         health.get('records_seen', 0),
+         health.get('records_new', 0),
+         health.get('records_changed', 0),
+         health.get('records_unchanged', 0),
+         health.get('records_invalid', 0),
+         health.get('status', 'unknown'),
+         health.get('status_reason'),
+         datetime.now(timezone.utc).isoformat())
     )
     conn.commit()
     conn.close()
