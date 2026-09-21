@@ -16,12 +16,48 @@ HEADERS = {
     'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8',
 }
 
+# === REPAIR GARDEN PRODUCT PANEL ===
+# Electronics / mining / robots / solar / power tools
+# Organized by domain. Each term targets a specific repair/resale market.
+
 DEFAULT_CATEGORIES = [
-    'macbook pro', 'iphone', 'ipad', 'rtx 4090', 'rtx 3080',
-    'nikon camera', 'makita drill', 'sony amplifier', 'dyson vacuum',
-    'nintendo switch', 'esp32', 'raspberry pi', 'solar panel',
-    'battery 18650', 'brushless motor', 'servo motor',
-    'mppt controller', 'inverter',
+    # --- Electronics (repair) ---
+    'macbook pro', 'iphone', 'ipad', 'android phone', 'laptop',
+    'gaming laptop', 'monitor', 'desktop pc',
+
+    # --- GPUs / Mining hardware ---
+    'rtx 4090', 'rtx 3080', 'rtx 3090', 'rx 7900', 'mining gpu',
+    'antminer', 'asic miner', 'mining rig', 'psu server',
+
+    # --- Cameras / Optics ---
+    'nikon camera', 'canon camera', 'sony camera', 'gopro',
+    'dji drone', 'binoculars', 'telescope',
+
+    # --- Power tools ---
+    'makita drill', 'bosch drill', 'dewalt drill', 'milwaukee drill',
+    'makita saw', 'angle grinder', 'circular saw',
+
+    # --- Audio / AV ---
+    'sony amplifier', 'marantz receiver', 'turntable', 'technics',
+    'studio monitors', 'headphones',
+
+    # --- Appliances ---
+    'dyson vacuum', 'dyson v15', 'roborock', 'roomba',
+    'washing machine', 'dishwasher', 'fridge freezer',
+
+    # --- Robot parts ---
+    'servo motor', 'brushless motor', 'esc motor',
+    'lidar sensor', 'depth camera', 'force torque sensor',
+    'robot gripper', 'canopen servo', 'ethercat servo',
+    'esp32', 'raspberry pi', 'arduino', 'jetson nano',
+
+    # --- Solar / Energy ---
+    'solar panel', 'mppt controller', 'inverter',
+    'battery 18650', 'lifepo4 battery', 'power station',
+    'ev charger', 'wallbox',
+
+    # --- Gaming / Console ---
+    'nintendo switch', 'steam deck', 'ps5', 'xbox',
 ]
 
 
