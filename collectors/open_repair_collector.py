@@ -1,18 +1,14 @@
 """Open Repair Alliance — historical dataset collector.
 
 Downloads the complete CSV from GitHub.
-Target: 300K+ records with full provenance.
-
-What: Real repair attempts from community repair cafés across Europe.
-Why: Empirical fault/success/failure data for electronics repair.
+Uses shared persistence functions. Idempotent.
 """
 
 import csv
-import hashlib
-import json
 import gzip
 import io
-from .base import BaseCollector
+from .base import BaseCollector, CollectorResult
+from shared.persist import insert_source_record
 
 
 class OpenRepairCollector(BaseCollector):
@@ -29,21 +25,26 @@ class OpenRepairCollector(BaseCollector):
         return None
 
     def parse(self, raw_content, raw_hash):
-        # Decompress if gzipped
+        result = CollectorResult()
+
         try:
             content = gzip.decompress(raw_content).decode('utf-8', errors='replace')
         except:
             content = raw_content.decode('utf-8', errors='replace')
 
         reader = csv.DictReader(io.StringIO(content))
-        count = 0
         for row in reader:
-            native_id = row.get('id', f'row_{count}')
+            native_id = row.get('id', '')
+            if not native_id:
+                result.records_invalid += 1
+                continue
+
             normalized = {
                 'source_native_id': native_id,
                 'event_date': row.get('event_date', ''),
                 'country': row.get('country', ''),
                 'product_category': row.get('product_category', ''),
+                'product_category_id': row.get('product_category_id', ''),
                 'brand': row.get('brand', ''),
                 'model': row.get('model', ''),
                 'problem': row.get('problem', ''),
@@ -51,10 +52,23 @@ class OpenRepairCollector(BaseCollector):
                 'repair_barrier': row.get('repair_barrier', ''),
                 'data_provider': row.get('data_provider', ''),
                 'group_identifier': row.get('group_identifier', ''),
+                'estimated_product_age': row.get('estimated_product_age', ''),
             }
-            if self._store_source_record(native_id, normalized, raw_hash):
-                count += 1
-        return count
+
+            ir = insert_source_record(
+                self.SOURCE_ID, self.DATASET, native_id,
+                normalized, raw_hash, self.PARSER_ID, self.PARSER_VERSION
+            )
+
+            if ir.inserted:
+                if ir.duplicate_of:
+                    result.records_changed += 1
+                else:
+                    result.records_new += 1
+            else:
+                result.records_unchanged += 1
+
+        return result
 
 
 if __name__ == '__main__':
