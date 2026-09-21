@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Business Event",
+  "type": "object",
+  "properties": {
+    "business_event_id": {
+      "type": "string"
+    },
+    "company_number": {
+      "type": "string"
+    },
+    "event_type": {
+      "type": "string"
+    },
+    "fields_changed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "published_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "timepoint": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "source_ref": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "business_event_id",
+    "company_number",
+    "event_type",
+    "observed_at",
+    "source_id",
+    "source_ref"
+  ],
+  "additionalProperties": true
+}

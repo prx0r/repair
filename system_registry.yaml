@@ -1,0 +1,37 @@
+systems:
+  - id: powpowpow
+    status: existing
+    mission: compute/resource economics
+    repo: prx0r/powpowpow
+    development_priority: existing
+    collection_urgency: P0
+
+  - id: pow-physical
+    status: build_next
+    mission: devices/components/failure/repair/parts/resale
+    development_priority: 1
+    collection_urgency: P0
+
+  - id: pow-uk
+    status: build
+    mission: labour/skills/training/tenders/local capacity
+    development_priority: 2
+    collection_urgency: P1
+
+  - id: pow-grid
+    status: build
+    mission: power/grid/headroom/constraints
+    development_priority: 3
+    collection_urgency: P1
+
+  - id: pow-capital
+    status: recorder_first
+    mission: company exposure/securities/market assimilation
+    development_priority: 4
+    collection_urgency: P0_EPHEMERAL
+
+  - id: pow-frontier
+    status: thin_ingest
+    mission: technical events and Seesaw hypothesis creation
+    development_priority: 5
+    collection_urgency: P2

@@ -1,0 +1,76 @@
+{
+  "source": "open_repair_alliance",
+  "format": "CSV",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "description": "ORDS unique identifier"
+    },
+    {
+      "name": "data_provider",
+      "type": "string"
+    },
+    {
+      "name": "country",
+      "type": "string",
+      "format": "ISO3"
+    },
+    {
+      "name": "partner_product_category",
+      "type": "string"
+    },
+    {
+      "name": "product_category",
+      "type": "string"
+    },
+    {
+      "name": "product_category_id",
+      "type": "integer"
+    },
+    {
+      "name": "brand",
+      "type": "string"
+    },
+    {
+      "name": "year_of_manufacture",
+      "type": "string"
+    },
+    {
+      "name": "product_age",
+      "type": "number"
+    },
+    {
+      "name": "repair_status",
+      "enum": [
+        "Fixed",
+        "Repairable",
+        "End of life",
+        "Unknown"
+      ]
+    },
+    {
+      "name": "repair_barrier_if_end_of_life",
+      "enum": [
+        "Spare parts not available",
+        "Spare parts too expensive",
+        "No way to open product",
+        "Repair information not available",
+        "Lack of equipment",
+        "Too worn out"
+      ]
+    },
+    {
+      "name": "group_identifier",
+      "type": "string"
+    },
+    {
+      "name": "event_date",
+      "type": "date"
+    },
+    {
+      "name": "problem",
+      "type": "string"
+    }
+  ]
+}

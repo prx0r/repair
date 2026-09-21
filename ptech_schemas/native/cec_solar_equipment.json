@@ -1,0 +1,20 @@
+{
+  "source": "cec_solar_equipment",
+  "families": [
+    "PV Module",
+    "Grid Support Solar Inverter",
+    "Grid Support Battery Inverter",
+    "Grid Support Solar/Battery Inverter",
+    "Battery",
+    "Energy Storage System",
+    "Power Control System",
+    "Meter",
+    "V2G Equipment"
+  ],
+  "common_identity_fields": [
+    "manufacturer",
+    "model_number",
+    "description"
+  ],
+  "notes": "Each equipment list has family-specific technical columns; retain each raw workbook/schema per release."
+}

@@ -1,0 +1,376 @@
+{
+  "name": "POW_SYSTEMS_DEV_REFERENCE_2026-09-20",
+  "created_at": "2026-09-20",
+  "files": [
+    {
+      "path": "00_SYSTEM_RANKING.md",
+      "bytes": 2359,
+      "sha256": "2deabf5a14654db8ca8bf58ba60caf6defaae42e52841b0715b15e97ea9f7dd1"
+    },
+    {
+      "path": "01_ARCHITECTURE.md",
+      "bytes": 3471,
+      "sha256": "daf3b11d2dde7904210765518ffcc5ebf6534c40c78da01bff341b98cf9c99ab"
+    },
+    {
+      "path": "02_BUILD_ORDER.md",
+      "bytes": 2377,
+      "sha256": "05e4261784296da96e4d3a93d6d78d2f015062d9a259130ebe636ba8698bcf88"
+    },
+    {
+      "path": "03_POW_MUSE_BOUNDARY.md",
+      "bytes": 953,
+      "sha256": "e697b6b49a24831847c3e9df6c48d6d179a269aca7024c210c4b25220b0e388b"
+    },
+    {
+      "path": "04_EXISTING_REPO_NOTES.md",
+      "bytes": 1059,
+      "sha256": "11403d3248375f67328ba248d3ec86e29d64032f9f3f8ca716fe3c7bb6a1f267"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2655,
+      "sha256": "5585a879b5ab061906c0bd8c7842194f79e6ca68b025f85910ccfd16bc70e6fe"
+    },
+    {
+      "path": "SOURCE_NOTES.md",
+      "bytes": 6580,
+      "sha256": "a01ad4afa163c25f7029d1a3995541df72c6c96697d0fbba378a6c15c1a41b9a"
+    },
+    {
+      "path": "checklists/COLLECTOR_CHECKLIST.md",
+      "bytes": 648,
+      "sha256": "044fd0303a676d4396b6203b69a8b87a14736ce727999034fdc97646c2f663f3"
+    },
+    {
+      "path": "checklists/FIRST_48_HOURS.md",
+      "bytes": 1395,
+      "sha256": "a48fe2ddfac36522435a24c6d4122e17bd01a2b78a040e7e925a8b24f2cc6579"
+    },
+    {
+      "path": "checklists/RELEASE_GATES.md",
+      "bytes": 534,
+      "sha256": "288c3b35f78d94d60e472277e73be939861c66786dc54dc0df6d408397f06b95"
+    },
+    {
+      "path": "checklists/SOURCE_ONBOARDING.md",
+      "bytes": 763,
+      "sha256": "572b8e1c962a9490de1b8eee8b0cf6f3946682191fc191c046c5984e33f12904"
+    },
+    {
+      "path": "cross_system/backtest_design.md",
+      "bytes": 1227,
+      "sha256": "ac31f2a81eb6b8f8ad2f7498508ac6c1f0d20ccc512868f03476a8326900243f"
+    },
+    {
+      "path": "cross_system/entity_edges.md",
+      "bytes": 920,
+      "sha256": "83491e619669180016a18ff1048aeb0788237b2be617d1825e1b42d6cd547f6b"
+    },
+    {
+      "path": "cross_system/event_taxonomy.yaml",
+      "bytes": 1003,
+      "sha256": "c51f418dfe5aa4832485ff33d2db95e86ee4e93aeebcfc64d213c863b3c81354"
+    },
+    {
+      "path": "cross_system/join_schema.sql",
+      "bytes": 1098,
+      "sha256": "578fde4fa488981c9ef9f71c1d46895d4de6efcc056e5f62f60b1ca9905892c9"
+    },
+    {
+      "path": "cross_system/products_map.md",
+      "bytes": 746,
+      "sha256": "d488cc772181e4bf27f74e4e8065264be3de5be7df500298a0b12f8db9ee4425"
+    },
+    {
+      "path": "cross_system/source_priority_matrix.csv",
+      "bytes": 2170,
+      "sha256": "440f49a2d0d14433e9417b5e7c6f1617a58ace5d10a2b106fda7ac3efefd117c"
+    },
+    {
+      "path": "shared/contracts.py",
+      "bytes": 3001,
+      "sha256": "b3846c71094140894e67bdcff7a554db80b670bb6bd78defa253eb73350c0cc9"
+    },
+    {
+      "path": "shared/economic_event.schema.json",
+      "bytes": 1379,
+      "sha256": "42007709570a26a9ce9f7df415431b84214f1cd7e42d7dc0e8ff1f7124afaece"
+    },
+    {
+      "path": "shared/ids.md",
+      "bytes": 936,
+      "sha256": "2cb914d60667ba5fad70db7882db4863cb5beb9aa07a0dabac04045a65fdf2a5"
+    },
+    {
+      "path": "shared/interoperability.md",
+      "bytes": 939,
+      "sha256": "0f2f05715a1e9001c59d73bac5caad7264a826b62c78cb12c742c9aebc243121"
+    },
+    {
+      "path": "shared/jev_patterns.md",
+      "bytes": 1151,
+      "sha256": "cdab4937e761139fd37ba925a9d5e3ebcd2dd478e9216794776e34e669efac25"
+    },
+    {
+      "path": "shared/quality_gates.md",
+      "bytes": 917,
+      "sha256": "483e3979e6eddf8d9503a552017c91edb23816609c770c632ed3eb2c43357b2e"
+    },
+    {
+      "path": "shared/rights.md",
+      "bytes": 964,
+      "sha256": "d9fac20fec9968a9195e1d8453ca6d0567c9920087d75e45e921526a718950f1"
+    },
+    {
+      "path": "shared/schema.sql",
+      "bytes": 3225,
+      "sha256": "c6ac03d3bfd77ddd66d7605f37ca29d33e4a271c576c4d6301d8d32175ad2989"
+    },
+    {
+      "path": "shared/seesaw.md",
+      "bytes": 1211,
+      "sha256": "bc41e8fba46bee35cc7e8cbc03ed5dad3a3c99c3bd7c8b0aea4fa65b3f7d0656"
+    },
+    {
+      "path": "shared/storage.md",
+      "bytes": 1261,
+      "sha256": "be93490a6d041df229e608e3fee6f8caf5958fd544dace9d88411d41cd654a59"
+    },
+    {
+      "path": "system_registry.yaml",
+      "bytes": 956,
+      "sha256": "2d28a10f846ee9c139e557f866aeb56e191c69d15df3035cd79db8f64c83b926"
+    },
+    {
+      "path": "systems/01_pow_physical/README.md",
+      "bytes": 1241,
+      "sha256": "12993891c1a3784d015f981ba95745a6028903fe95a130d3e026754c4d09e352"
+    },
+    {
+      "path": "systems/01_pow_physical/backfill.md",
+      "bytes": 607,
+      "sha256": "7ec45939ce39ee98975573d06ed105d3d5cf64012a1e6afc61d24ce31ba164fd"
+    },
+    {
+      "path": "systems/01_pow_physical/ingestion.md",
+      "bytes": 1503,
+      "sha256": "1c731ebe52005f661a145c5a7e53fcb7cc69ba5a847cb7adc71c665c0c8b2bcf"
+    },
+    {
+      "path": "systems/01_pow_physical/jev.yaml",
+      "bytes": 1278,
+      "sha256": "46181738f8534da5f25a3b5e8162aaee75f804497914057fe054af8749c1ded1"
+    },
+    {
+      "path": "systems/01_pow_physical/mcp_surface.md",
+      "bytes": 659,
+      "sha256": "522f1d1c9b959597a319e43902e53ffbf1c08e47814a680aed9aca142db1c378"
+    },
+    {
+      "path": "systems/01_pow_physical/schema.sql",
+      "bytes": 6352,
+      "sha256": "608953d718e64478d3ed70853b4b190b7f45d1910ffaa82e07e8f0bdb1ffe14e"
+    },
+    {
+      "path": "systems/01_pow_physical/seed_taxonomy.yaml",
+      "bytes": 655,
+      "sha256": "f475139dd228796e2ec34dd44a1de451ab7a686f3088f20a4eca83d17f5eaa07"
+    },
+    {
+      "path": "systems/01_pow_physical/sources.yaml",
+      "bytes": 3900,
+      "sha256": "994e82a1ac664fbf64af1e1bfcf30cee3990cf02e9c2e02b2d67dfd474dc7c2f"
+    },
+    {
+      "path": "systems/01_pow_physical/tests.md",
+      "bytes": 682,
+      "sha256": "72bcfe13f8ae38514b4bf922f5db7ba26f93e8357adf163f714923114dd531f1"
+    },
+    {
+      "path": "systems/01_pow_physical/transforms.md",
+      "bytes": 1540,
+      "sha256": "985649b118f1af4fff1c24b4a66513770e8682c0e38a4cd307934f18ba7a2b76"
+    },
+    {
+      "path": "systems/02_pow_uk/README.md",
+      "bytes": 896,
+      "sha256": "20b113e8d0d04a429b7173d3d5549bc6fcbf5409b37aea71d0a2ae7e11594902"
+    },
+    {
+      "path": "systems/02_pow_uk/backfill.md",
+      "bytes": 415,
+      "sha256": "abc6fa270f5ac93f7520250bfd9098239a8192bcf2b72b2dea52f36e2ff8652b"
+    },
+    {
+      "path": "systems/02_pow_uk/ingestion.md",
+      "bytes": 1239,
+      "sha256": "9bff745c3be4136beebd64c413f516eaedc93fc6c239e7c6d88015c068c09a08"
+    },
+    {
+      "path": "systems/02_pow_uk/jev.yaml",
+      "bytes": 976,
+      "sha256": "380b7c99cf0f79b809b1c6aac35bc2a9d827b57f1355039f69ac33fdcb4d5cd1"
+    },
+    {
+      "path": "systems/02_pow_uk/mcp_surface.md",
+      "bytes": 573,
+      "sha256": "0134ceea86cd03326592d9c73ae27d638e91aed5a911b6df6a965d0bb9e60a68"
+    },
+    {
+      "path": "systems/02_pow_uk/schema.sql",
+      "bytes": 4475,
+      "sha256": "29fb7a03eb31c3b1489a00c827f3e56d9c7d9aa16cf5e069c7504978d61d32d9"
+    },
+    {
+      "path": "systems/02_pow_uk/sources.yaml",
+      "bytes": 3083,
+      "sha256": "1587b821ccda9ca431ce8229ad31b9556533f8cca68d151911d85d2fe6569758"
+    },
+    {
+      "path": "systems/02_pow_uk/tests.md",
+      "bytes": 532,
+      "sha256": "ddb20c993f065461bb2e6e68e710575770287f1a18c4f3ea7c5098d490ae29b4"
+    },
+    {
+      "path": "systems/02_pow_uk/transforms.md",
+      "bytes": 1140,
+      "sha256": "5581d1bb5f668f180cc075c8f7474e185d3c4762ccfb3b026261ac6dab610b25"
+    },
+    {
+      "path": "systems/03_pow_grid/README.md",
+      "bytes": 765,
+      "sha256": "0f897d6cdc42f94137bc279a1e863eeae81eb8ae32520450707ff359e8988495"
+    },
+    {
+      "path": "systems/03_pow_grid/backfill.md",
+      "bytes": 365,
+      "sha256": "d714122b31fdf3d6d322356a4d860f2d7cd8c9e3b9ab9b94b129bb9d3792e33b"
+    },
+    {
+      "path": "systems/03_pow_grid/ingestion.md",
+      "bytes": 891,
+      "sha256": "fd153ff0e3afadfec798e33204b88e15f2c328f14bf37653a19688227512d683"
+    },
+    {
+      "path": "systems/03_pow_grid/jev.yaml",
+      "bytes": 765,
+      "sha256": "fcff654107a1c2aae06f70c5e63afa64869c04fe8d315ec7bc8744b71924c643"
+    },
+    {
+      "path": "systems/03_pow_grid/mcp_surface.md",
+      "bytes": 366,
+      "sha256": "b14aedbb3006be02e397eab53e762a45af6247da2964c4eccc86a95492b983d6"
+    },
+    {
+      "path": "systems/03_pow_grid/schema.sql",
+      "bytes": 3676,
+      "sha256": "de8f0333c5c16e00ab9feae504f9f9e2cad99aa36d2b592291c77df75e76ea1b"
+    },
+    {
+      "path": "systems/03_pow_grid/sources.yaml",
+      "bytes": 2011,
+      "sha256": "781040d524959ea4183271f698d994c0090fc3520491cab34ae6446e410d27aa"
+    },
+    {
+      "path": "systems/03_pow_grid/tests.md",
+      "bytes": 362,
+      "sha256": "3c635fbce99116817c39b75e68c4f88ec8ac271c271523411fd44eb623116a0a"
+    },
+    {
+      "path": "systems/03_pow_grid/transforms.md",
+      "bytes": 915,
+      "sha256": "3dab5027502fd63dfc9fbdf1b493e8a28b461d2f49a35104eaf9a1bbc03f119c"
+    },
+    {
+      "path": "systems/04_pow_capital/README.md",
+      "bytes": 919,
+      "sha256": "ca5788e6843f80dd27fe78af5cc52e5aeaff2a9c079d792c08b1f406c3ed6699"
+    },
+    {
+      "path": "systems/04_pow_capital/backfill.md",
+      "bytes": 291,
+      "sha256": "e57e2206321b179e9326aeba5a3cbe5c59d2749e7f244ac059f15dc4979190da"
+    },
+    {
+      "path": "systems/04_pow_capital/ingestion.md",
+      "bytes": 1277,
+      "sha256": "13666b6cab83781a73c0995df2cb1f6bd3c4461f282a66746221525696e35835"
+    },
+    {
+      "path": "systems/04_pow_capital/jev.yaml",
+      "bytes": 1199,
+      "sha256": "d28d132ca03c3e8e5a4a6a0f3e2d86b4f59a98298b300e2410b43d713bc1d8a3"
+    },
+    {
+      "path": "systems/04_pow_capital/mcp_surface.md",
+      "bytes": 406,
+      "sha256": "b61fe2236e27e6f8319549195972e60498d725132b73047609e60a5f504b3979"
+    },
+    {
+      "path": "systems/04_pow_capital/schema.sql",
+      "bytes": 4032,
+      "sha256": "65193172e8c2dd7fb6bdbc8bd41a9062999fdf9a13351bc9d99c17e0f3b8ec89"
+    },
+    {
+      "path": "systems/04_pow_capital/sources.yaml",
+      "bytes": 2181,
+      "sha256": "fbd74452814be52cb33bca1d89bfb758ba215f9527c7b3c2ec0409e7c50104bd"
+    },
+    {
+      "path": "systems/04_pow_capital/tests.md",
+      "bytes": 466,
+      "sha256": "6fc39c159ba45361df77ff1d17a4fa8e6862b15dea8e43fd71bfd8191ae65de7"
+    },
+    {
+      "path": "systems/04_pow_capital/transforms.md",
+      "bytes": 1035,
+      "sha256": "163e578ebb84dbb2a1b564196926de1cb367add8bae630436ae2eea8b4cc1d4c"
+    },
+    {
+      "path": "systems/05_pow_frontier/README.md",
+      "bytes": 853,
+      "sha256": "20b691e007e2425c52e58d84a80b4c78deef1e27bc82e2c4afde53eeea81caa6"
+    },
+    {
+      "path": "systems/05_pow_frontier/backfill.md",
+      "bytes": 463,
+      "sha256": "a0220ca087d658e58ff05fef3bfc0908efaf8c8414af3ddeaf1aa4cda57ba5de"
+    },
+    {
+      "path": "systems/05_pow_frontier/ingestion.md",
+      "bytes": 903,
+      "sha256": "49f2a5cda2e7f14f2df353d5af28e3cb61bd927c7ec59a33404ec86615a0b660"
+    },
+    {
+      "path": "systems/05_pow_frontier/jev.yaml",
+      "bytes": 1103,
+      "sha256": "d461ebaf569ba4dcaa14046e782b03c670d78b3b88f9a06e02678e496747b12a"
+    },
+    {
+      "path": "systems/05_pow_frontier/mcp_surface.md",
+      "bytes": 332,
+      "sha256": "78ed3eed83328f2d85f6aa89288df2830a533b68d5a6b076fbb0839e950eca75"
+    },
+    {
+      "path": "systems/05_pow_frontier/schema.sql",
+      "bytes": 3152,
+      "sha256": "1cb70d53be4c7e2ab56047ba9299ecb74437b97b51f9b4ccd8943e97241d9b53"
+    },
+    {
+      "path": "systems/05_pow_frontier/sources.yaml",
+      "bytes": 2053,
+      "sha256": "55afcf35c23870509b6bdf6925ee4b4d8600aa414b1f3564f8febcc5586e1e8d"
+    },
+    {
+      "path": "systems/05_pow_frontier/tests.md",
+      "bytes": 403,
+      "sha256": "e3db3125f164ff5de82b5ae21754156c1cc9cb5e5286af3f0f6862716b411a0a"
+    },
+    {
+      "path": "systems/05_pow_frontier/transforms.md",
+      "bytes": 670,
+      "sha256": "c3fda25c9f16bb152b0b32523434e99d1b52aaca0728576f5717587e23830fa5"
+    }
+  ]
+}

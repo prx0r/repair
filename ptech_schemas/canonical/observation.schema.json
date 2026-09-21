@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PTech Observation",
+  "type": "object",
+  "properties": {
+    "observation_id": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "entity_type": {
+      "type": "string"
+    },
+    "entity_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "event_type": {
+      "type": "string"
+    },
+    "event_time": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "valid_from": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "valid_to": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "raw_hash": {
+      "type": "string"
+    },
+    "raw_ref": {
+      "type": "string"
+    },
+    "state_hash": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "previous_state_hash": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_cursor": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "collector_version": {
+      "type": "string"
+    },
+    "quality_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "payload": {
+      "type": [
+        "object",
+        "array",
+        "string",
+        "number",
+        "boolean",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "observation_id",
+    "source_id",
+    "category",
+    "entity_type",
+    "event_type",
+    "observed_at",
+    "raw_hash",
+    "raw_ref",
+    "schema_version"
+  ],
+  "additionalProperties": true
+}

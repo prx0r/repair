@@ -1,0 +1,23 @@
+{
+  "source": "mouser",
+  "fields": [
+    "MouserPartNumber",
+    "ManufacturerPartNumber",
+    "Manufacturer",
+    "Availability",
+    "DataSheetUrl",
+    "Description",
+    "ImagePath",
+    "Category",
+    "Packaging",
+    "LifecycleStatus",
+    "RoHSStatus",
+    "Min",
+    "Mult",
+    "LeadTime",
+    "SuggestedReplacement",
+    "ProductDetailUrl",
+    "PriceBreaks"
+  ],
+  "notes": "Field spelling/casing may differ by API version; preserve raw responses."
+}

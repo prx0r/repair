@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Installed Base Observation",
+  "type": "object",
+  "properties": {
+    "installed_base_id": {
+      "type": "string"
+    },
+    "asset_family": {
+      "type": "string"
+    },
+    "asset_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "geography": {
+      "type": "string"
+    },
+    "period": {
+      "type": "string"
+    },
+    "count": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "source_ref": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "installed_base_id",
+    "asset_family",
+    "geography",
+    "period",
+    "count",
+    "unit",
+    "source_id",
+    "source_ref"
+  ],
+  "additionalProperties": true
+}

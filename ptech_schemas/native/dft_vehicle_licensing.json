@@ -1,0 +1,18 @@
+{
+  "source": "dft_vehicle_licensing",
+  "primary_dataset": "df_VEH0120",
+  "description": "Licensed/SORN stock, make/model by quarter, GB/UK",
+  "typical_dimensions": [
+    "Quarter",
+    "BodyType",
+    "Make",
+    "GenModel",
+    "Model",
+    "Fuel",
+    "Keepership",
+    "LicenceStatus",
+    "Geography"
+  ],
+  "measure": "Vehicles",
+  "notes": "Exact columns vary by datafile/release; preserve raw header and release metadata."
+}

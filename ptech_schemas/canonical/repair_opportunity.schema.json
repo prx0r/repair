@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RepairOpportunity",
+  "type": "object",
+  "required": ["opportunity_id", "asset_id", "observed_at", "currency", "evidence"],
+  "properties": {
+    "opportunity_id": {"type": "string"},
+    "asset_id": {"type": "string"},
+    "asset_revision": {"type": ["string", "null"]},
+    "fault_class": {"type": ["string", "null"]},
+    "condition": {"type": ["string", "null"]},
+    "geography": {"type": ["string", "null"]},
+    "currency": {"type": "string"},
+    "acquisition_price": {"type": ["number", "null"]},
+    "working_value": {"type": ["number", "null"]},
+    "salvage_value": {"type": ["number", "null"]},
+    "part_out_value": {"type": ["number", "null"]},
+    "sale_liquidity_score": {"type": ["number", "null"]},
+    "repair_success_probability": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "parts_cost_expected": {"type": ["number", "null"]},
+    "labour_minutes_expected": {"type": ["number", "null"]},
+    "fees_expected": {"type": ["number", "null"]},
+    "expected_repair_ev": {"type": ["number", "null"]},
+    "capital_required": {"type": ["number", "null"]},
+    "tools_required": {"type": "array", "items": {"type": "string"}},
+    "skills_required": {"type": "array", "items": {"type": "string"}},
+    "certifications_required": {"type": "array", "items": {"type": "string"}},
+    "safety_flags": {"type": "array", "items": {"type": "string"}},
+    "candidate_repairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "part_id": {"type": ["string", "null"]},
+          "description": {"type": "string"},
+          "part_cost": {"type": ["number", "null"]},
+          "success_probability": {"type": ["number", "null"]}
+        }
+      }
+    },
+    "observed_at": {"type": "string", "format": "date-time"},
+    "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "evidence": {"type": "array", "items": {"type": "string"}}
+  }
+}

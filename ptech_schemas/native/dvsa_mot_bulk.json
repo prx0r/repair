@@ -1,0 +1,44 @@
+{
+  "source": "dvsa_mot_bulk",
+  "format": "gzip JSONL",
+  "vehicle_fields": [
+    "registration",
+    "firstUsedDate",
+    "registrationDate",
+    "manufactureDate",
+    "primaryColour",
+    "secondaryColour",
+    "engineSize",
+    "model",
+    "make",
+    "fuelType",
+    "lastMotTestDate",
+    "motTests",
+    "last_update_date",
+    "dataSource"
+  ],
+  "mot_test_fields": [
+    "completedDate",
+    "motTestNumber",
+    "dataSource",
+    "expiryDate",
+    "registrationAtTimeOfTest",
+    "testResult",
+    "odometerValue",
+    "odometerUnit",
+    "odometerResultType",
+    "defects"
+  ],
+  "defect_fields": [
+    "dangerous",
+    "text",
+    "type"
+  ],
+  "defect_types": [
+    "DANGEROUS",
+    "MAJOR",
+    "MINOR",
+    "ADVISORY",
+    "PRS"
+  ]
+}

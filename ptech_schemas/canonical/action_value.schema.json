@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PTech ActionValue",
+  "type": "object",
+  "required": [
+    "asset_or_part_id",
+    "observed_at"
+  ],
+  "properties": {
+    "asset_or_part_id": {
+      "type": "string"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sell_broken_value": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "repair_cost": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "repair_success_probability": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "working_value": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "part_out_value": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "operate_value_per_month": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "recommended_action": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "confidence": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    }
+  },
+  "additionalProperties": true
+}

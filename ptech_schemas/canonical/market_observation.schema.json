@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Market Observation",
+  "type": "object",
+  "properties": {
+    "market_observation_id": {
+      "type": "string"
+    },
+    "asset_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "venue": {
+      "type": "string"
+    },
+    "listing_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "condition_raw": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "condition_class": {
+      "enum": [
+        "NEW",
+        "REFURBISHED",
+        "USED_GOOD",
+        "USED_FAIR",
+        "FAULTY",
+        "FOR_PARTS",
+        "UNKNOWN"
+      ]
+    },
+    "price": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "currency": {
+      "type": "string"
+    },
+    "shipping_price": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "seller_region": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "first_seen": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_seen": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "ended_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "outcome": {
+      "enum": [
+        "ACTIVE",
+        "DISAPPEARED",
+        "SOLD_CONFIRMED",
+        "ENDED_UNSOLD",
+        "UNKNOWN"
+      ]
+    },
+    "raw_ref": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "market_observation_id",
+    "source_id",
+    "venue",
+    "condition_class",
+    "currency",
+    "first_seen",
+    "observed_at",
+    "outcome",
+    "raw_ref"
+  ],
+  "additionalProperties": true
+}

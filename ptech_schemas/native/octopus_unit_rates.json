@@ -1,0 +1,25 @@
+{
+  "source": "octopus_tariffs",
+  "fields": [
+    "value_exc_vat",
+    "value_inc_vat",
+    "valid_from",
+    "valid_to",
+    "payment_method"
+  ],
+  "product_fields": [
+    "code",
+    "full_name",
+    "display_name",
+    "description",
+    "is_variable",
+    "is_green",
+    "is_tracker",
+    "is_prepay",
+    "is_business",
+    "is_restricted",
+    "term",
+    "available_from",
+    "available_to"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "source": "pvlive",
+  "default_fields": [
+    "gsp_id_or_pes_id",
+    "datetime_gmt",
+    "generation_mw"
+  ],
+  "optional_fields": [
+    "bias_error",
+    "capacity_mwp",
+    "installedcapacity_mwp",
+    "lcl_mw",
+    "stats_error",
+    "ucl_mw",
+    "uncertainty_mw",
+    "site_count",
+    "updated_gmt"
+  ],
+  "period_minutes": 30
+}

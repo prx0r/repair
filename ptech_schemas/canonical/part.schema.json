@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Part",
+  "type": "object",
+  "properties": {
+    "part_id": {
+      "type": "string"
+    },
+    "manufacturer": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "mpn": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "category": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "lifecycle_status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "identifiers": {
+      "type": "object"
+    },
+    "specifications": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "part_id"
+  ],
+  "additionalProperties": true
+}

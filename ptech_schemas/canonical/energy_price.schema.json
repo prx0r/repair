@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Energy Price",
+  "type": "object",
+  "properties": {
+    "energy_price_id": {
+      "type": "string"
+    },
+    "market": {
+      "type": "string"
+    },
+    "product": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "region": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "valid_from": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "valid_to": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "price": {
+      "type": "number"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "source_ref": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "energy_price_id",
+    "market",
+    "valid_from",
+    "price",
+    "currency",
+    "unit",
+    "source_id",
+    "source_ref"
+  ],
+  "additionalProperties": true
+}

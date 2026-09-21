@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PTech SupplierObservation",
+  "type": "object",
+  "required": [
+    "observed_at",
+    "supplier",
+    "part_or_model"
+  ],
+  "properties": {
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "supplier": {
+      "type": "string"
+    },
+    "part_or_model": {
+      "type": "string"
+    },
+    "revision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "region": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "unit_price": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "currency": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "moq": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "stock_status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "lead_time_days": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "shipping_quote": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "certification_claims": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "lifecycle_status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "replacement_model": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "raw_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

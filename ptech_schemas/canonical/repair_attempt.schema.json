@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Repair Attempt",
+  "type": "object",
+  "properties": {
+    "repair_attempt_id": {
+      "type": "string"
+    },
+    "asset_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "asset_family": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "brand": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "product_age_years": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "problem_text": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "fault_codes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "enum": [
+        "FIXED",
+        "REPAIRABLE",
+        "END_OF_LIFE",
+        "UNKNOWN"
+      ]
+    },
+    "barrier": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "event_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "country": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "source_ref": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "repair_attempt_id",
+    "status",
+    "source_id",
+    "source_ref"
+  ],
+  "additionalProperties": true
+}

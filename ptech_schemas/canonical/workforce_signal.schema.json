@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PTech WorkforceSignal",
+  "type": "object",
+  "required": [
+    "source",
+    "observed_at",
+    "signal_type"
+  ],
+  "properties": {
+    "source": {
+      "type": "string"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "signal_type": {
+      "enum": [
+        "job_ad",
+        "apprenticeship",
+        "salary",
+        "skill_requirement",
+        "occupation_count"
+      ]
+    },
+    "occupation": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "location": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "salary_min": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "salary_max": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "certifications": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "first_seen": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "last_seen": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

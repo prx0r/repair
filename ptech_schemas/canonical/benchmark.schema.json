@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Hardware/Productive Benchmark",
+  "type": "object",
+  "properties": {
+    "benchmark_id": {
+      "type": "string"
+    },
+    "asset_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "hardware_model": {
+      "type": "string"
+    },
+    "benchmark_suite": {
+      "type": "string"
+    },
+    "benchmark_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "workload": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "metric_name": {
+      "type": "string"
+    },
+    "metric_value": {
+      "type": "number"
+    },
+    "metric_unit": {
+      "type": "string"
+    },
+    "power_w": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "software": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "software_commit": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "source_ref": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "benchmark_id",
+    "hardware_model",
+    "benchmark_suite",
+    "metric_name",
+    "metric_value",
+    "metric_unit",
+    "observed_at",
+    "source_id",
+    "source_ref"
+  ],
+  "additionalProperties": true
+}

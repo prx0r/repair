@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PTech ServiceMarketObservation",
+  "type": "object",
+  "required": [
+    "observed_at",
+    "service_type",
+    "location"
+  ],
+  "properties": {
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "service_type": {
+      "type": "string"
+    },
+    "provider_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "location": {
+      "type": "string"
+    },
+    "certifications": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "quote_gbp": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "lead_time_days": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "availability_status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "job_outcome": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "labour_hours": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "materials_cost_gbp": {
+      "type": [
+        "number",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,105 @@
+{
+  "researched_at": "2026-09-20",
+  "authoritative_anchors": [
+    {
+      "source_id": "open_repair_alliance",
+      "url": "https://openrepair.org/open-data/downloads/",
+      "verified": "305,649 EEE rows; ORDS v0.3; CC BY-SA 4.0; data through July 2025"
+    },
+    {
+      "source_id": "dvsa_mot_bulk",
+      "url": "https://documentation.history.mot.api.gov.uk/mot-history-api/download-vehicle-mot-history-data/",
+      "verified": "Sunday complete bulk; daily 24-hour deltas; files available from 08:00"
+    },
+    {
+      "source_id": "uk_ev_ocpi",
+      "url": "https://www.gov.uk/government/publications/the-public-charge-point-regulations-2023-guidance/public-charge-point-regulations-2023-guidance",
+      "verified": "OCPI 2.2.1 reference + availability; status changes within 30s; free/machine-readable; historical publication not required"
+    },
+    {
+      "source_id": "gridserve_ocpi",
+      "url": "https://www.gridserve.com/wp-content/uploads/2024/11/GRIDSERVE-PCPR-API-Developer-Documentation.pdf",
+      "verified": "base https://api.gridserve.com/ocpi/v1/; ec-subscription-key"
+    },
+    {
+      "source_id": "cec_solar_equipment",
+      "url": "https://www.energy.ca.gov/programs-and-topics/programs/solar-equipment-lists",
+      "verified": "PV/inverter/battery/ESS/PCS lists; updated about 3x/month; archived equipment available"
+    },
+    {
+      "source_id": "pvlive",
+      "url": "https://api0.solar.sheffield.ac.uk/pvlive/gdocs",
+      "verified": "historical from 2010-01-01; 30-minute outturns; updated_gmt supports revision-aware ingestion"
+    },
+    {
+      "source_id": "octopus_tariffs",
+      "url": "https://docs.octopus.energy/rest/guides/endpoints/",
+      "verified": "public products/tariffs no auth; historical available_at/tariffs_active_at and rate-history endpoints"
+    },
+    {
+      "source_id": "companies_house_stream",
+      "url": "https://developer-specs.company-information.service.gov.uk/streaming-api/guides/overview",
+      "verified": "long-running HTTP stream with timepoint/event metadata"
+    },
+    {
+      "source_id": "companies_house_bulk",
+      "url": "https://www.gov.uk/guidance/companies-house-data-products",
+      "verified": "free monthly company CSV snapshots; daily/monthly electronic XBRL accounts; PSC JSON product"
+    },
+    {
+      "source_id": "ebay_buy_api",
+      "url": "https://developer.ebay.com/join/api-license-agreement",
+      "verified": "terms require explicit legal review for PTech historical price/arbitrage/modeling use; disabled by default"
+    }
+  ],
+  "v0_2_research": [
+    {
+      "name": "Skills England Annual Skills Report 2026",
+      "url": "https://www.gov.uk/government/publications/skills-england-annual-skills-report-and-sectoral-skills-needs-assessments-2026/skills-england-annual-skills-report-2026"
+    },
+    {
+      "name": "AI Scenarios 2030",
+      "url": "https://www.gov.uk/government/publications/ai-scenarios-2030-helping-policymakers-plan-for-the-future-of-ai/ai-scenarios-2030-helping-policymakers-plan-for-the-future-of-ai"
+    },
+    {
+      "name": "Clean energy jobs plan",
+      "url": "https://www.gov.uk/government/news/clean-energy-jobs-boom-to-bring-thousands-of-new-jobs"
+    },
+    {
+      "name": "Business Population Estimates 2025",
+      "url": "https://www.gov.uk/government/statistics/business-population-estimates-2025/business-population-estimates-for-the-uk-and-regions-2025-statistical-release"
+    },
+    {
+      "name": "Unitree official shop",
+      "url": "https://shop.unitree.com/collections/accessories"
+    },
+    {
+      "name": "MYACTUATOR X series downloads",
+      "url": "https://www.myactuator.com/downloads-xseries"
+    },
+    {
+      "name": "MYACTUATOR EOL/replacement news",
+      "url": "https://www.myactuator.com/%E5%89%AF%E6%9C%AC-news-5"
+    },
+    {
+      "name": "ROS2 Control",
+      "url": "https://github.com/ros-controls/ros2_control"
+    },
+    {
+      "name": "UK Apprenticeship API",
+      "url": "https://developer.apprenticeships.education.gov.uk/"
+    },
+    {
+      "name": "Adzuna API",
+      "url": "https://developer.adzuna.com/"
+    },
+    {
+      "name": "Find a Tender OCDS",
+      "url": "https://www.find-tender.service.gov.uk/Developer/Documentation"
+    },
+    {
+      "name": "Contracts Finder OCDS",
+      "url": "https://www.gov.uk/government/publications/open-contracting"
+    }
+  ]
+}

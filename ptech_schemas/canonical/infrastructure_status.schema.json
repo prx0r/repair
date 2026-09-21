@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Infrastructure Status",
+  "type": "object",
+  "properties": {
+    "status_id": {
+      "type": "string"
+    },
+    "site_id": {
+      "type": "string"
+    },
+    "evse_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "connector_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "type": "string"
+    },
+    "power_kw": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "price_per_kwh": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "currency": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_updated_at_source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "source_ref": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "status_id",
+    "site_id",
+    "status",
+    "observed_at",
+    "source_id",
+    "source_ref"
+  ],
+  "additionalProperties": true
+}

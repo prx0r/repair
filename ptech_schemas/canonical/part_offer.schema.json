@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Part Offer",
+  "type": "object",
+  "properties": {
+    "offer_id": {
+      "type": "string"
+    },
+    "part_id": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "seller": {
+      "type": "string"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "unit_price": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "quantity_available": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "lead_time_days": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "min_order_qty": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "price_breaks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "source_ref": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "offer_id",
+    "part_id",
+    "source_id",
+    "seller",
+    "observed_at",
+    "currency",
+    "source_ref"
+  ],
+  "additionalProperties": true
+}

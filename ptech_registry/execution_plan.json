@@ -1,0 +1,324 @@
+[
+  {
+    "source_id": "open_repair_alliance",
+    "action": "backfill_then_refresh",
+    "cadence": "release-driven (check daily; ingest on release)",
+    "status": "enabled",
+    "history": "YES: releases in GitHub from 2019 through 2025; current aggregate 305,649 EEE rows"
+  },
+  {
+    "source_id": "restart_project",
+    "action": "backfill_then_refresh",
+    "cadence": "release-driven",
+    "status": "enabled",
+    "history": "YES: historical repair records available"
+  },
+  {
+    "source_id": "ifixit",
+    "action": "backfill_then_refresh",
+    "cadence": "weekly for metadata; modifiedSince incremental where supported",
+    "status": "review_terms",
+    "history": "PARTIAL: current guide corpus and modified metadata; not a market history"
+  },
+  {
+    "source_id": "dvsa_mot_bulk",
+    "action": "backfill_then_refresh",
+    "cadence": "daily delta after 08:00; Sunday bulk snapshot",
+    "status": "credentials_needed",
+    "history": "YES: complete current history per vehicle; cars/motorcycles/vans GB from 2005; NI from 2017; some heavy vehicle data"
+  },
+  {
+    "source_id": "opss_recalls",
+    "action": "backfill_then_refresh",
+    "cadence": "daily",
+    "status": "enabled_manual",
+    "history": "YES: historical recall/alert pages searchable"
+  },
+  {
+    "source_id": "uk_ev_ocpi",
+    "action": "start_clock",
+    "cadence": "30-60 seconds for EVSE status; reference/tariffs hourly/daily",
+    "status": "enable_per_operator",
+    "history": "NO mandated public history. Regulations explicitly say historical data need not be public. Archive now."
+  },
+  {
+    "source_id": "gridserve_ocpi",
+    "action": "start_clock",
+    "cadence": "30-60 sec status if endpoint exposes live; reference hourly",
+    "status": "credentials_needed",
+    "history": "Current state; no historical guarantee"
+  },
+  {
+    "source_id": "monta_open_data",
+    "action": "start_clock",
+    "cadence": "30-60 sec live; reference hourly",
+    "status": "enabled_verify",
+    "history": "Current state; archive locally"
+  },
+  {
+    "source_id": "dft_ev_chargepoint_stats",
+    "action": "backfill_then_refresh",
+    "cadence": "quarterly release",
+    "status": "enabled",
+    "history": "YES: historical quarterly tables/releases"
+  },
+  {
+    "source_id": "dft_vehicle_licensing",
+    "action": "backfill_then_refresh",
+    "cadence": "quarterly/annual by table",
+    "status": "enabled",
+    "history": "YES: make/model stock by quarter GB from 1994 Q4; multiple other historical files"
+  },
+  {
+    "source_id": "ozev_chargepoint_models",
+    "action": "backfill_then_refresh",
+    "cadence": "weekly check / release-driven",
+    "status": "enabled",
+    "history": "Current list; historical snapshots may require archive"
+  },
+  {
+    "source_id": "ozev_installers",
+    "action": "discover_or_defer",
+    "cadence": "weekly",
+    "status": "manual_or_terms_review",
+    "history": "No bulk historical API found; snapshot if terms permit"
+  },
+  {
+    "source_id": "cec_solar_equipment",
+    "action": "backfill_then_refresh",
+    "cadence": "3x/month (typically 1st, 11th, 21st)",
+    "status": "enabled",
+    "history": "YES/PARTIAL: archived equipment lists including PV modules, inverters, batteries; snapshot active lists going forward"
+  },
+  {
+    "source_id": "mcs_product_directory",
+    "action": "discover_or_defer",
+    "cadence": "weekly/manual until machine interface confirmed",
+    "status": "discover_api",
+    "history": "Unknown"
+  },
+  {
+    "source_id": "pvlive",
+    "action": "backfill_then_refresh",
+    "cadence": "5 min latest + daily correction + monthly historical reconciliation if mirroring precisely",
+    "status": "enabled",
+    "history": "YES: API docs state 2010-01-01 to present; capacity releases retained"
+  },
+  {
+    "source_id": "pvgis",
+    "action": "backfill_then_refresh",
+    "cadence": "on-demand / annual refresh",
+    "status": "enabled",
+    "history": "YES/modelled; backfillable anytime"
+  },
+  {
+    "source_id": "uk_solar_pv_costs",
+    "action": "backfill_then_refresh",
+    "cadence": "annual/release-driven",
+    "status": "enabled",
+    "history": "YES: historic cost series"
+  },
+  {
+    "source_id": "uk_battery_installations",
+    "action": "backfill_then_refresh",
+    "cadence": "annual/release-driven",
+    "status": "enabled",
+    "history": "YES: currently from 2024 onward"
+  },
+  {
+    "source_id": "repd",
+    "action": "backfill_then_refresh",
+    "cadence": "quarterly",
+    "status": "enabled",
+    "history": "YES/PARTIAL: quarterly release history; current extract contains project lifecycle fields"
+  },
+  {
+    "source_id": "epc_england_wales",
+    "action": "backfill_then_refresh",
+    "cadence": "monthly/periodic refresh",
+    "status": "credentials_needed",
+    "history": "YES: certificates since 2012 incl expired/replaced"
+  },
+  {
+    "source_id": "octopus_tariffs",
+    "action": "backfill_then_refresh",
+    "cadence": "daily for Agile; on-demand for history",
+    "status": "enabled",
+    "history": "YES: available_at/tariffs_active_at and historical unit-rate URLs"
+  },
+  {
+    "source_id": "elexon_insights",
+    "action": "backfill_then_refresh",
+    "cadence": "5-30 min depending endpoint; daily archival sufficient for many PTech uses",
+    "status": "enabled",
+    "history": "YES: broad historical BMRS/Insights datasets"
+  },
+  {
+    "source_id": "neso_data_portal",
+    "action": "backfill_then_refresh",
+    "cadence": "source-dependent (daily to monthly)",
+    "status": "enabled_discovery",
+    "history": "YES for many datasets"
+  },
+  {
+    "source_id": "mouser",
+    "action": "start_clock",
+    "cadence": "daily for promoted MPN panel; weekly for long-tail",
+    "status": "credentials_needed",
+    "history": "NO native historical price/stock; snapshot now"
+  },
+  {
+    "source_id": "digikey",
+    "action": "start_clock",
+    "cadence": "daily for promoted MPN panel",
+    "status": "credentials_needed",
+    "history": "NO native historical price/stock; snapshot now"
+  },
+  {
+    "source_id": "element14_farnell",
+    "action": "start_clock",
+    "cadence": "daily promoted panel",
+    "status": "credentials_needed",
+    "history": "NO guaranteed historical price/stock; snapshot now"
+  },
+  {
+    "source_id": "rs_components",
+    "action": "start_clock",
+    "cadence": "daily promoted panel",
+    "status": "credentials_needed_verify",
+    "history": "NO guaranteed historical stock/price; snapshot now"
+  },
+  {
+    "source_id": "nexar_octopart",
+    "action": "discover_or_defer",
+    "cadence": "spot enrichment unless paid tier",
+    "status": "limited_free",
+    "history": "Limited/evaluation; not a broad free archive"
+  },
+  {
+    "source_id": "blender_open_data",
+    "action": "backfill_then_refresh",
+    "cadence": "daily raw snapshot or weekly",
+    "status": "enabled",
+    "history": "YES: 300k+ public benchmark submissions; raw snapshots/query exports"
+  },
+  {
+    "source_id": "mlperf",
+    "action": "backfill_then_refresh",
+    "cadence": "release-driven / weekly git pull",
+    "status": "enabled",
+    "history": "YES: versioned result repositories across releases"
+  },
+  {
+    "source_id": "pci_ids",
+    "action": "backfill_then_refresh",
+    "cadence": "daily/weekly git pull",
+    "status": "enabled",
+    "history": "YES: full Git history"
+  },
+  {
+    "source_id": "hwdata",
+    "action": "backfill_then_refresh",
+    "cadence": "weekly",
+    "status": "enabled",
+    "history": "YES: Git history"
+  },
+  {
+    "source_id": "bambu_profiles",
+    "action": "backfill_then_refresh",
+    "cadence": "weekly",
+    "status": "enabled",
+    "history": "YES: Git history"
+  },
+  {
+    "source_id": "prusa_profiles",
+    "action": "backfill_then_refresh",
+    "cadence": "weekly",
+    "status": "enabled",
+    "history": "YES: Git history"
+  },
+  {
+    "source_id": "marlin_configs",
+    "action": "backfill_then_refresh",
+    "cadence": "weekly",
+    "status": "enabled",
+    "history": "YES: Git history/version branches"
+  },
+  {
+    "source_id": "cura_profiles",
+    "action": "backfill_then_refresh",
+    "cadence": "weekly",
+    "status": "enabled",
+    "history": "YES: Git history"
+  },
+  {
+    "source_id": "energy_star_products",
+    "action": "backfill_then_refresh",
+    "cadence": "daily/weekly",
+    "status": "enabled",
+    "history": "CURRENT + certification dates; historical coverage varies by dataset"
+  },
+  {
+    "source_id": "eprel",
+    "action": "backfill_then_refresh",
+    "cadence": "weekly/manual until bulk API confirmed",
+    "status": "discover_api",
+    "history": "Current registered models; historical automation unclear"
+  },
+  {
+    "source_id": "companies_house_stream",
+    "action": "start_clock",
+    "cadence": "continuous daemon",
+    "status": "credentials_needed",
+    "history": "PARTIAL: resume via timepoint while retained; old cursors can expire. Start now."
+  },
+  {
+    "source_id": "companies_house_bulk",
+    "action": "backfill_then_refresh",
+    "cadence": "monthly",
+    "status": "enabled",
+    "history": "Current monthly snapshot; previous snapshots may not all be hosted"
+  },
+  {
+    "source_id": "companies_house_accounts",
+    "action": "backfill_then_refresh",
+    "cadence": "daily Tue-Sat + monthly archive",
+    "status": "enabled",
+    "history": "YES: monthly historical archives for electronically filed accounts"
+  },
+  {
+    "source_id": "openstreetmap_geofabrik",
+    "action": "backfill_then_refresh",
+    "cadence": "daily diff; weekly/monthly full reconciliation",
+    "status": "enabled",
+    "history": "YES: OSM full history exists; regional historical reconstruction is heavy"
+  },
+  {
+    "source_id": "planning_data_uk",
+    "action": "backfill_then_refresh",
+    "cadence": "daily",
+    "status": "enabled_with_coverage_flags",
+    "history": "PARTIAL/incomplete for planning applications; many datasets vary by provider coverage"
+  },
+  {
+    "source_id": "ebay_buy_api",
+    "action": "discover_or_defer",
+    "cadence": "NOT ENABLED for PTech archive absent written permission",
+    "status": "BLOCKED_PENDING_PERMISSION",
+    "history": "Do not assume archival rights"
+  },
+  {
+    "source_id": "marketplace_optin_seller",
+    "action": "start_clock",
+    "cadence": "event/daily",
+    "status": "design_pattern",
+    "history": "YES where seller account API exposes it"
+  },
+  {
+    "source_id": "public_web_market_candidates",
+    "action": "discover_or_defer",
+    "cadence": "disabled by default",
+    "status": "DISCOVERY_ONLY",
+    "history": "varies"
+  }
+]

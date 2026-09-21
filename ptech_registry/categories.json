@@ -1,0 +1,144 @@
+{
+  "repair_failure": {
+    "description": "Observed faults, repair attempts, outcomes, barriers and safety failures",
+    "canonical_entities": [
+      "asset",
+      "repair_attempt",
+      "failure_event"
+    ]
+  },
+  "repair_knowledge": {
+    "description": "Instructions and device taxonomies; enrichment rather than proprietary tape",
+    "canonical_entities": [
+      "asset",
+      "part",
+      "procedure"
+    ]
+  },
+  "market_tape": {
+    "description": "Price/condition/listing lifecycle/realised sale data. Highest moat, highest licensing sensitivity.",
+    "canonical_entities": [
+      "asset",
+      "listing",
+      "market_observation",
+      "transaction"
+    ]
+  },
+  "parts_supply": {
+    "description": "MPN identity, distributor stock, price, lead time and replacement edges",
+    "canonical_entities": [
+      "part",
+      "part_offer",
+      "compatibility_edge"
+    ]
+  },
+  "ev_infrastructure": {
+    "description": "Public EV chargepoint identity, connectors, tariffs, live state and reliability",
+    "canonical_entities": [
+      "site",
+      "evse",
+      "connector",
+      "tariff",
+      "infrastructure_status"
+    ]
+  },
+  "ev_assets": {
+    "description": "Vehicle/charger installed base and model identity",
+    "canonical_entities": [
+      "asset",
+      "installed_base"
+    ]
+  },
+  "solar_energy": {
+    "description": "Solar/battery asset identity, deployment, output and project pipeline",
+    "canonical_entities": [
+      "asset",
+      "installation",
+      "energy_output",
+      "project"
+    ]
+  },
+  "energy_prices": {
+    "description": "Retail/wholesale electricity prices and generation economics",
+    "canonical_entities": [
+      "energy_price",
+      "grid_state"
+    ]
+  },
+  "energy_grid": {
+    "description": "Grid constraints, geography, forecasts and system state",
+    "canonical_entities": [
+      "grid_region",
+      "grid_state"
+    ]
+  },
+  "built_environment": {
+    "description": "Buildings and retrofit opportunity",
+    "canonical_entities": [
+      "building",
+      "installation_opportunity"
+    ]
+  },
+  "compute_hardware": {
+    "description": "GPU/CPU/server identity and productive benchmarks",
+    "canonical_entities": [
+      "asset",
+      "benchmark"
+    ]
+  },
+  "fabrication": {
+    "description": "3D printer/CNC-like machine identity, boards, firmware and profile compatibility",
+    "canonical_entities": [
+      "asset",
+      "part",
+      "compatibility_edge"
+    ]
+  },
+  "product_identity": {
+    "description": "Cross-domain model identity, efficiency and technical attributes",
+    "canonical_entities": [
+      "asset"
+    ]
+  },
+  "business_services": {
+    "description": "Companies, installers, suppliers and local physical service capacity",
+    "canonical_entities": [
+      "business",
+      "service_provider",
+      "business_event"
+    ]
+  },
+  "robotics_automation": {
+    "description": "Robot parts, joints, perception, end-effectors, control and lifecycle",
+    "canonical_entities": [
+      "asset",
+      "part",
+      "compatibility_edge",
+      "part_offer",
+      "market_observation"
+    ]
+  },
+  "workforce_transition": {
+    "description": "Jobs, apprenticeships, skills/certifications and labour-demand transition around physical tech",
+    "canonical_entities": [
+      "workforce_signal",
+      "service_provider",
+      "business_event"
+    ]
+  },
+  "service_economics": {
+    "description": "Local physical service supply, quotes, lead time, qualifications and outcomes",
+    "canonical_entities": [
+      "service_market_observation",
+      "service_provider"
+    ]
+  },
+  "supplier_market": {
+    "description": "OEM/China/global supplier quote, MOQ, lead-time, revision and lifecycle observations",
+    "canonical_entities": [
+      "part",
+      "part_offer",
+      "supplier_observation"
+    ]
+  }
+}

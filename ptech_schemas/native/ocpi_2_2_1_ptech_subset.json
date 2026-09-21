@@ -1,0 +1,63 @@
+{
+  "source": "uk_ev_ocpi",
+  "standard": "OCPI 2.2.1",
+  "required_objects": [
+    "Location",
+    "EVSE",
+    "Connector",
+    "Tariff"
+  ],
+  "location_fields": [
+    "country_code",
+    "party_id",
+    "id",
+    "publish",
+    "name",
+    "address",
+    "city",
+    "postal_code",
+    "country",
+    "coordinates",
+    "evses",
+    "opening_times",
+    "last_updated"
+  ],
+  "evse_fields": [
+    "uid",
+    "evse_id",
+    "status",
+    "status_schedule",
+    "capabilities",
+    "connectors",
+    "floor_level",
+    "coordinates",
+    "physical_reference",
+    "directions",
+    "parking_restrictions",
+    "images",
+    "last_updated"
+  ],
+  "connector_fields": [
+    "id",
+    "standard",
+    "format",
+    "power_type",
+    "max_voltage",
+    "max_amperage",
+    "max_electric_power",
+    "tariff_ids",
+    "terms_and_conditions",
+    "last_updated"
+  ],
+  "ptech_statuses": [
+    "AVAILABLE",
+    "CHARGING",
+    "RESERVED",
+    "INOPERATIVE",
+    "OUTOFORDER",
+    "BLOCKED",
+    "PLANNED",
+    "REMOVED",
+    "UNKNOWN"
+  ]
+}

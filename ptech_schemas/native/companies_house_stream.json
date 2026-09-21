@@ -1,0 +1,15 @@
+{
+  "source": "companies_house_stream",
+  "envelope_fields": [
+    "event",
+    "company_number",
+    "data"
+  ],
+  "event_fields": [
+    "fields_changed",
+    "published_at",
+    "timepoint",
+    "type"
+  ],
+  "notes": "Exact stream resources differ; raw line is canonical evidence."
+}
