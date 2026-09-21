@@ -416,27 +416,28 @@ class TestExport:
     def test_export_produces_files(self, tmp_path):
         """Export should produce JSONL files."""
         os.environ['REPAIR_DB'] = str(tmp_path / 'test.db')
-        # Initialize DB
+        # Initialize DB with schema
         conn = sqlite3.connect(str(tmp_path / 'test.db'))
         from shared.db import SCHEMA
         conn.executescript(SCHEMA)
-        # Add a test record
-        conn.execute(
-            "INSERT INTO source_record "
-            "(source_record_id, source_id, dataset, source_native_id, "
-            "retrieved_at, normalized_json, payload_hash, raw_payload_hash, "
-            "parser_id, parser_version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            ('test:native1', 'test_source', 'test', 'native1',
-             '2026-09-21', json.dumps({'name': 'test'}), 'hash1', 'raw1',
-             'parser', '1.0')
-        )
+        # Add test records with product_category
+        for i in range(5):
+            conn.execute(
+                "INSERT INTO source_record "
+                "(source_record_id, source_id, dataset, source_native_id, "
+                "retrieved_at, normalized_json, payload_hash, raw_payload_hash, "
+                "parser_id, parser_version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (f'test:cat{i}', 'open_repair', 'test', f'cat{i}',
+                 '2026-09-21', json.dumps({'product_category': f'Category {i}', 'repair_status': 'Fixed'}),
+                 f'hash{i}', 'raw1', 'parser', '1.0')
+            )
         conn.commit()
         conn.close()
 
         from export_k1 import export_all
         stats = export_all(output_dir=str(tmp_path / 'k1_out'))
-        assert stats['node'] >= 1
-        assert (tmp_path / 'k1_out' / 'node.jsonl').exists()
+        assert stats.get('nodes', 0) >= 1
+        assert (tmp_path / 'k1_out' / 'nodes.jsonl').exists()
 
 
 if __name__ == '__main__':
