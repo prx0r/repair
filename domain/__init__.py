@@ -1,35 +1,28 @@
-"""POWUK Domain — the four native economic primitives.
+"""Domain — the five gardens of Repair."""
 
-CAPABILITY  — Who can perform a physical task now?
-PIPELINE    — Who is likely to become capable later?
-DEMAND      — How much demand for that capability is appearing?
-FRICTION    — What prevents capacity from responding?
-
-Everything resolves onto: CAPABILITY × GEOGRAPHY × TIME
-"""
-
-from .capability import (
-    Capability, CapabilityType, Qualification, CertificationScheme,
-    CapabilityOntology, CAPABILITY_REGISTRY,
+from .gardens import (
+    AssetPassport, Component, SubstitutionEdge,
+    FaultRecord,
+    PartOffer,
+    ListingState, MarketListing,
+    OutcomeReceipt, RepairCase,
 )
-from .geography import (
-    Geography, GeoLevel, GeographyResolver, UK_GEOGRAPHY,
-)
-from .contracts import (
-    Observation, DerivedFact, EconomicEvent, Relationship,
-    TruthClass, Recoverability, TemporalSemantic,
-)
-from .entities import (
-    Provider, Company, TrainingProvider, WorkforcePopulation,
-    DemandEvent, PolicyEvent, ProcurementOpportunity,
-)
+from .capability import Capability, CapabilityOntology, CAPABILITY_REGISTRY
+from .geography import Geography, GeographyResolver, UK_GEOGRAPHY
+from .contracts import Observation, DerivedFact, EconomicEvent, Relationship
 
 __all__ = [
-    "Capability", "CapabilityType", "Qualification", "CertificationScheme",
-    "CapabilityOntology", "CAPABILITY_REGISTRY",
-    "Geography", "GeoLevel", "GeographyResolver", "UK_GEOGRAPHY",
+    # Asset Garden
+    "AssetPassport", "Component", "SubstitutionEdge",
+    # Failure Garden
+    "FaultRecord",
+    # Parts Garden
+    "PartOffer",
+    # Market Garden
+    "ListingState", "MarketListing",
+    # Outcome Garden
+    "OutcomeReceipt", "RepairCase",
+    # Shared
     "Observation", "DerivedFact", "EconomicEvent", "Relationship",
-    "TruthClass", "Recoverability", "TemporalSemantic",
-    "Provider", "Company", "TrainingProvider", "WorkforcePopulation",
-    "DemandEvent", "PolicyEvent", "ProcurementOpportunity",
+    "Capability", "Geography",
 ]
